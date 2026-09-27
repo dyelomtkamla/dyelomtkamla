@@ -1,0 +1,5 @@
+package com.alshafei.shafei_family
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity : FlutterActivity()

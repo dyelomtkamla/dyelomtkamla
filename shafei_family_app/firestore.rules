@@ -1,0 +1,61 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function myDoc() { return /databases/$(db)/documents/users/$(request.auth.uid); }
+    function approved() {
+      return signedIn() && exists(myDoc()) && get(myDoc()).data.approved == true;
+    }
+    function admin() { return approved() && get(myDoc()).data.isAdmin == true; }
+
+    function validEvent(d) {
+      return d.type in ['wedding', 'engagement', 'condolence', 'birth', 'other']
+        && d.title is string && d.title.size() >= 2 && d.title.size() <= 100
+        && d.description is string && d.description.size() <= 1000
+        && d.location is string && d.location.size() <= 200
+        && d.date is timestamp;
+    }
+
+    // أفراد العائلة
+    match /users/{uid} {
+      allow read: if approved() || (signedIn() && request.auth.uid == uid);
+
+      // أي حساب جديد يبدأ "غير معتمد" وليس مسؤولاً
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.approved == false
+        && request.resource.data.isAdmin == false
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 2 && request.resource.data.name.size() <= 60;
+
+      // المسؤول يعتمد الأعضاء، والعضو يعدل بياناته فقط دون صلاحياته
+      allow update: if admin()
+        || (signedIn() && request.auth.uid == uid
+            && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['approved', 'isAdmin']));
+      allow delete: if admin();
+    }
+
+    // المناسبات: يراها أفراد العائلة المعتمدون فقط
+    match /events/{id} {
+      allow read: if approved();
+
+      allow create: if approved()
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.attendees == []
+        && validEvent(request.resource.data);
+
+      // صاحب المناسبة أو المسؤول يعدلها (بدون تغيير صاحبها)
+      allow update: if (approved()
+          && (resource.data.createdBy == request.auth.uid || admin())
+          && request.resource.data.createdBy == resource.data.createdBy
+          && validEvent(request.resource.data))
+        // أي فرد يسجل/يلغي حضوره هو فقط
+        || (approved()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['attendees'])
+          && request.resource.data.attendees.toSet()
+               .symmetricDifference(resource.data.attendees.toSet()) == [request.auth.uid].toSet());
+
+      allow delete: if approved() && (resource.data.createdBy == request.auth.uid || admin());
+    }
+  }
+}

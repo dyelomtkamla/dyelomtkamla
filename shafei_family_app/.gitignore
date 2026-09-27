@@ -1,0 +1,13 @@
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+pubspec.lock
+*.iml
+.idea/
+ios/Pods/
+functions/node_modules/
+# ملفات Firebase الخاصة بمشروعك (تتولد بـ flutterfire configure)
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
