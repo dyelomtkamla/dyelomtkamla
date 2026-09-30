@@ -1,0 +1,54 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [main, claude/affectionate-edison-p6fbdi]
+    paths:
+      - 'shafei_family_app/**'
+      - '.github/workflows/android-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: shafei_family_app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+      - run: flutter build apk --release
+
+      - name: Rename APK
+        run: cp build/app/outputs/flutter-apk/app-release.apk shafei-family.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shafei-family-apk
+          path: shafei_family_app/shafei-family.apk
+
+      - name: Publish download link
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-${{ github.run_number }}
+          name: تطبيق عائلة الشافعي - أندرويد (${{ github.run_number }})
+          body: نزّل ملف shafei-family.apk على موبايل الأندرويد وافتحه للتثبيت.
+          target_commitish: ${{ github.sha }}
+          make_latest: true
+          files: shafei_family_app/shafei-family.apk
