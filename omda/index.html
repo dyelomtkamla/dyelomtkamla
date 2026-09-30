@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>عائلة العمدة | تطبيق العائلة - الأفراد والشجرة والمناسبات</title>
+<meta name="description" content="تطبيق عائلة العمدة: تعرّف على أفراد العائلة، تصفّح شجرة العائلة، وتابع المناسبات والأخبار العائلية في مكان واحد."/>
+<meta name="theme-color" content="#0e2a43"/>
+<link rel="canonical" href="https://dyelomtkamla.github.io/dyelomtkamla/omda/"/>
+
+<!-- Open Graph / sharing -->
+<meta property="og:type" content="website"/>
+<meta property="og:locale" content="ar_AR"/>
+<meta property="og:title" content="عائلة العمدة"/>
+<meta property="og:description" content="أفراد العائلة، شجرة العائلة، المناسبات والأخبار في مكان واحد."/>
+<meta property="og:image" content="https://dyelomtkamla.github.io/dyelomtkamla/omda/img/og.jpg"/>
+<meta name="twitter:card" content="summary_large_image"/>
+
+<!-- App install -->
+<link rel="manifest" href="manifest.webmanifest"/>
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png"/>
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="عائلة العمدة"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Aref+Ruqaa:wght@700&display=swap" rel="stylesheet"/>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"عائلة العمدة","inLanguage":"ar","applicationCategory":"LifestyleApplication","operatingSystem":"Any","image":"img/omda.jpg"}
+</script>
+
+<style>
+  :root{
+    --navy:#0e2a43; --navy-deep:#081b2c;
+    --gold:#c9a227; --gold-light:#e6c65c;
+    --cream:#faf6ec; --card:#ffffff; --ink:#1c1c1c; --muted:#666;
+    --line:rgba(14,42,67,.10);
+    --radius:18px; --shadow:0 10px 30px rgba(14,42,67,.12);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    font-family:'Tajawal',sans-serif; background:var(--cream); color:var(--ink);
+    line-height:1.7; overflow-x:hidden;
+    padding-bottom:calc(72px + env(safe-area-inset-bottom));
+  }
+  img{max-width:100%; display:block;}
+  button,input,select,textarea{font:inherit; color:inherit;}
+  .wrap{max-width:520px; margin:0 auto; width:100%;}
+
+  /* ===== TOP BAR ===== */
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    background:var(--navy); color:#fff;
+    padding:calc(10px + env(safe-area-inset-top)) 16px 10px;
+    display:flex; align-items:center; gap:10px;
+    box-shadow:0 4px 14px rgba(0,0,0,.18);
+  }
+  .topbar img{width:38px; height:38px; border-radius:50%; object-fit:cover; border:2px solid var(--gold);}
+  .topbar h1{font-family:'Aref Ruqaa',serif; font-size:22px; color:var(--gold-light); line-height:1.2;}
+  .topbar small{display:block; font-size:11px; color:#cfe0ee; font-family:'Tajawal',sans-serif;}
+
+  /* ===== HERO (the Omda) ===== */
+  .hero{
+    position:relative; background:linear-gradient(180deg,var(--navy) 0%,var(--navy-deep) 100%);
+    color:#fff; text-align:center; padding:26px 16px 30px; overflow:hidden;
+  }
+  .hero::before{content:""; position:absolute; inset:0;
+    background:radial-gradient(circle at 80% 0%,rgba(201,162,39,.25),transparent 55%);}
+  .omda-photo{
+    position:relative; width:170px; height:170px; margin:0 auto 14px; border-radius:50%;
+    padding:5px; background:linear-gradient(135deg,var(--gold-light),var(--gold),#9b7a14);
+    box-shadow:0 12px 30px rgba(0,0,0,.35); cursor:zoom-in; border:0; display:block;
+  }
+  .omda-photo img{width:100%; height:100%; border-radius:50%; object-fit:cover; object-position:40% 18%; border:3px solid #fff;}
+  .crown{position:absolute; top:-6px; left:50%; transform:translateX(-50%);
+    background:var(--gold); color:var(--navy-deep); font-size:12px; font-weight:800;
+    padding:2px 14px; border-radius:20px; border:2px solid #fff; white-space:nowrap;}
+  .hero h2{position:relative; font-size:22px; font-weight:800; color:var(--gold-light);}
+  .hero p{position:relative; font-size:13.5px; color:#cfe0ee; max-width:360px; margin:6px auto 0;}
+
+  .stats{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:-18px 16px 0; position:relative; z-index:2;}
+  .stat{background:var(--card); border-radius:14px; box-shadow:var(--shadow); text-align:center; padding:10px 4px;}
+  .stat b{display:block; font-size:22px; color:var(--navy); font-weight:800;}
+  .stat span{font-size:11.5px; color:var(--muted);}
+
+  /* ===== SECTIONS ===== */
+  .section{padding:22px 16px 6px;}
+  .sec-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;}
+  .sec-head h3{font-size:18px; font-weight:800; color:var(--navy);}
+  .sec-head h3 span{color:var(--gold);}
+  .link-btn{background:none; border:0; color:var(--gold); font-weight:700; font-size:13px; cursor:pointer;}
+
+  .word{
+    background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:16px 18px; border-right:4px solid var(--gold); font-size:14px;
+  }
+  .word footer{margin-top:8px; font-size:12px; color:var(--gold); font-weight:700;}
+
+  .list{display:flex; flex-direction:column; gap:10px;}
+  .item{
+    background:var(--card); border-radius:14px; box-shadow:0 4px 14px rgba(14,42,67,.08);
+    padding:12px 14px; display:flex; gap:12px; align-items:center;
+  }
+  .avatar{flex:0 0 46px; width:46px; height:46px; border-radius:50%;
+    background:linear-gradient(160deg,var(--navy),var(--navy-deep)); color:var(--gold-light);
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:18px; overflow:hidden;}
+  .avatar img{width:100%; height:100%; object-fit:cover; object-position:40% 18%;}
+  .item .body{flex:1; min-width:0;}
+  .item h4{font-size:15px; color:var(--navy); font-weight:700;}
+  .item p{font-size:12.5px; color:var(--muted);}
+  .item .meta{font-size:11.5px; color:var(--gold); font-weight:700;}
+  .tag{display:inline-block; font-size:11px; font-weight:700; padding:1px 10px; border-radius:20px; background:#f3ead0; color:#7a5d0b;}
+  .tag.wedding{background:#fde7ef; color:#a3134b;}
+  .tag.birth{background:#e3f4ea; color:#17693a;}
+  .tag.condolence{background:#e9ecef; color:#3b4550;}
+  .tag.gathering{background:#e4eefa; color:#1d4f8a;}
+  .del{background:none; border:0; color:#b33; font-size:18px; cursor:pointer; padding:4px 6px;}
+  .empty{text-align:center; color:var(--muted); font-size:13px; padding:18px;}
+
+  .search{width:100%; padding:11px 14px; border-radius:12px; border:1px solid var(--line); background:#fff; margin-bottom:12px;}
+
+  /* ===== TREE ===== */
+  .tree ul{list-style:none; padding-right:18px; border-right:2px dashed rgba(201,162,39,.6); margin-right:10px;}
+  .tree > ul{border:0; padding:0; margin:0;}
+  .tree li{margin:8px 0; position:relative;}
+  .tree li li::before{content:""; position:absolute; right:-18px; top:22px; width:16px; border-top:2px dashed rgba(201,162,39,.6);}
+  .node{display:inline-flex; align-items:center; gap:8px; background:#fff; border-radius:30px; padding:5px 12px 5px 6px;
+    box-shadow:0 3px 10px rgba(14,42,67,.10); border:1px solid var(--line);}
+  .node .avatar{width:34px; height:34px; flex-basis:34px; font-size:14px;}
+  .node b{font-size:13.5px; color:var(--navy);}
+  .node.root{border:2px solid var(--gold);}
+
+  /* ===== FORMS / SHEET ===== */
+  .fab-add{
+    position:fixed; left:16px; bottom:calc(84px + env(safe-area-inset-bottom)); z-index:60;
+    width:54px; height:54px; border-radius:50%; border:0; cursor:pointer;
+    background:var(--gold); color:var(--navy-deep); font-size:30px; font-weight:800;
+    box-shadow:0 8px 20px rgba(0,0,0,.25);
+  }
+  @media (min-width:520px){ .fab-add{left:calc(50% - 260px + 16px);} }
+  .sheet-bg{position:fixed; inset:0; background:rgba(8,27,44,.55); z-index:100; display:none; align-items:flex-end; justify-content:center;}
+  .sheet-bg.open{display:flex;}
+  .sheet{background:var(--cream); width:100%; max-width:520px; border-radius:22px 22px 0 0; padding:18px 16px calc(18px + env(safe-area-inset-bottom)); max-height:90vh; overflow:auto;}
+  .sheet h3{color:var(--navy); font-size:18px; margin-bottom:12px;}
+  .field{margin-bottom:10px;}
+  .field label{display:block; font-size:12.5px; color:var(--navy); font-weight:700; margin-bottom:4px;}
+  .field input,.field select,.field textarea{width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--line); background:#fff;}
+  .actions{display:flex; gap:10px; margin-top:6px;}
+  .btn{flex:1; padding:12px; border-radius:12px; border:0; font-weight:800; cursor:pointer;}
+  .btn-primary{background:var(--navy); color:var(--gold-light);}
+  .btn-ghost{background:#e9e3d2; color:var(--navy);}
+
+  .lightbox{position:fixed; inset:0; background:rgba(0,0,0,.9); z-index:200; display:none; align-items:center; justify-content:center; padding:16px; cursor:zoom-out;}
+  .lightbox.open{display:flex;}
+  .lightbox img{max-height:90vh; border-radius:12px;}
+
+  /* ===== BOTTOM NAV ===== */
+  nav.tabs{
+    position:fixed; bottom:0; left:0; right:0; z-index:80; background:#fff;
+    box-shadow:0 -6px 18px rgba(0,0,0,.10);
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  nav.tabs .in{max-width:520px; margin:0 auto; display:flex;}
+  nav.tabs button{
+    flex:1; background:none; border:0; padding:9px 2px 8px; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:2px; font-size:11.5px; color:#8a8a8a; font-weight:700;
+  }
+  nav.tabs svg{width:22px; height:22px; fill:currentColor;}
+  nav.tabs button.active{color:var(--navy);}
+  nav.tabs button.active svg{fill:var(--gold);}
+
+  .view{display:none;}
+  .view.active{display:block;}
+  .note{font-size:11.5px; color:var(--muted); text-align:center; padding:14px 16px 4px;}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <img src="img/icon-192.png" alt="العمدة" width="38" height="38"/>
+  <div>
+    <h1>عائلة العمدة</h1>
+    <small>بيت واحد.. وقلب واحد</small>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ===== HOME ===== -->
+  <section class="view active" id="view-home">
+    <div class="hero">
+      <button class="omda-photo" id="omdaPhoto" aria-label="عرض صورة العمدة">
+        <span class="crown">العمدة</span>
+        <img src="img/omda.jpg" alt="صورة العمدة كبير عائلة العمدة" width="170" height="170"/>
+      </button>
+      <h2 id="omdaName">كبير العائلة</h2>
+      <p>أهلاً بكم في تطبيق عائلة العمدة، مكان يجمع الأهل والأحباب ويقرّب المسافات.</p>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><b id="stMembers">0</b><span>فرد</span></div>
+      <div class="stat"><b id="stEvents">0</b><span>مناسبة قادمة</span></div>
+      <div class="stat"><b id="stNews">0</b><span>خبر</span></div>
+    </div>
+
+    <div class="section">
+      <div class="sec-head"><h3>كلمة <span>العمدة</span></h3></div>
+      <blockquote class="word">
+        العائلة هي السند والظهر، وصلة الرحم بركة في العمر والرزق. هذا التطبيق بيتكم الثاني، شاركوا فيه أفراحكم ومناسباتكم، وخلّونا دايماً على تواصل.
+        <footer>— العمدة</footer>
+      </blockquote>
+    </div>
+
+    <div class="section">
+      <div class="sec-head"><h3>المناسبات <span>القادمة</span></h3><button class="link-btn" data-go="events">عرض الكل</button></div>
+      <div class="list" id="homeEvents"></div>
+    </div>
+
+    <div class="section">
+      <div class="sec-head"><h3>آخر <span>الأخبار</span></h3><button class="link-btn" data-go="news">عرض الكل</button></div>
+      <div class="list" id="homeNews"></div>
+    </div>
+  </section>
+
+  <!-- ===== MEMBERS ===== -->
+  <section class="view" id="view-members">
+    <div class="section">
+      <div class="sec-head"><h3>أفراد <span>العائلة</span></h3></div>
+      <input class="search" id="memberSearch" type="search" placeholder="ابحث بالاسم أو المدينة..."/>
+      <div class="list" id="membersList"></div>
+    </div>
+  </section>
+
+  <!-- ===== TREE ===== -->
+  <section class="view" id="view-tree">
+    <div class="section">
+      <div class="sec-head"><h3>شجرة <span>العائلة</span></h3></div>
+      <div class="tree" id="treeBox"></div>
+    </div>
+  </section>
+
+  <!-- ===== EVENTS ===== -->
+  <section class="view" id="view-events">
+    <div class="section">
+      <div class="sec-head"><h3><span>المناسبات</span></h3></div>
+      <div class="list" id="eventsList"></div>
+    </div>
+  </section>
+
+  <!-- ===== NEWS ===== -->
+  <section class="view" id="view-news">
+    <div class="section">
+      <div class="sec-head"><h3>أخبار <span>العائلة</span></h3></div>
+      <div class="list" id="newsList"></div>
+    </div>
+  </section>
+
+  <p class="note">البيانات المضافة تُحفظ على هذا الجهاز. صورة العمدة ثابتة في التطبيق وتظهر لجميع أفراد العائلة.</p>
+</main>
+
+<button class="fab-add" id="fabAdd" aria-label="إضافة" hidden>+</button>
+
+<!-- ===== ADD SHEET ===== -->
+<div class="sheet-bg" id="sheetBg">
+  <form class="sheet" id="sheetForm" autocomplete="off">
+    <h3 id="sheetTitle"></h3>
+    <div id="sheetFields"></div>
+    <div class="actions">
+      <button type="submit" class="btn btn-primary">حفظ</button>
+      <button type="button" class="btn btn-ghost" id="sheetCancel">إلغاء</button>
+    </div>
+  </form>
+</div>
+
+<div class="lightbox" id="lightbox"><img src="img/omda.jpg" alt="صورة العمدة"/></div>
+
+<!-- ===== BOTTOM NAV ===== -->
+<nav class="tabs" aria-label="التنقل">
+  <div class="in">
+    <button class="active" data-go="home"><svg viewBox="0 0 24 24"><path d="M4 20V10l8-6 8 6v10h-5v-6H9v6H4z"/></svg>الرئيسية</button>
+    <button data-go="members"><svg viewBox="0 0 24 24"><path d="M9 11a4 4 0 100-8 4 4 0 000 8zm8 0a3 3 0 100-6 3 3 0 000 6zM1 20c0-3.3 3.6-6 8-6s8 2.7 8 6v1H1v-1zm17.5 1v-1c0-1.9-.8-3.6-2.1-4.8 3.6.2 6.6 2.2 6.6 4.8v1h-4.5z"/></svg>الأفراد</button>
+    <button data-go="tree"><svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 00-4.9 6A4.5 4.5 0 008 17h3v5h2v-5h3a4.5 4.5 0 00.9-9A5 5 0 0012 2z"/></svg>الشجرة</button>
+    <button data-go="events"><svg viewBox="0 0 24 24"><path d="M7 2v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2V2h-2v2H9V2H7zm-2 8h14v10H5V10z"/></svg>المناسبات</button>
+    <button data-go="news"><svg viewBox="0 0 24 24"><path d="M4 4h13v16H6a2 2 0 01-2-2V4zm15 4h1a1 1 0 011 1v9a2 2 0 01-2 2V8zM7 7v3h7V7H7zm0 5v2h7v-2H7zm0 4v2h7v-2H7z"/></svg>الأخبار</button>
+  </div>
+</nav>
+
+<script>
+(function(){
+  'use strict';
+
+  var KEY = 'omda-family-data-v1';
+  var OMDA_ID = 'omda';
+
+  var seed = {
+    members: [
+      { id: OMDA_ID, name: 'العمدة', relation: 'كبير العائلة', city: '', phone: '', parent: '' }
+    ],
+    events: [],
+    news: [
+      { id: 'n1', title: 'إطلاق تطبيق عائلة العمدة', body: 'بفضل الله أطلقنا تطبيق العائلة ليكون مكاناً يجمعنا. أضيفوا أنفسكم وأبناءكم وشاركونا مناسباتكم.', date: new Date().toISOString().slice(0,10) }
+    ]
+  };
+
+  function load(){
+    try { var d = JSON.parse(localStorage.getItem(KEY)); if (d && d.members) return d; } catch(e){}
+    return JSON.parse(JSON.stringify(seed));
+  }
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(data)); } catch(e){} }
+
+  var data = load();
+  var current = 'home';
+
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+  function $(id){ return document.getElementById(id); }
+  function today(){ return new Date().toISOString().slice(0,10); }
+  function fmtDate(d){
+    if (!d) return '';
+    try { return new Date(d + 'T00:00:00').toLocaleDateString('ar-EG', { weekday:'long', year:'numeric', month:'long', day:'numeric' }); } catch(e){ return d; }
+  }
+  function byId(id){ for (var i=0;i<data.members.length;i++) if (data.members[i].id === id) return data.members[i]; return null; }
+
+  function avatar(m){
+    if (m.id === OMDA_ID) return '<div class="avatar"><img src="img/icon-192.png" alt=""/></div>';
+    return '<div class="avatar">' + esc((m.name || '؟').trim().charAt(0)) + '</div>';
+  }
+
+  var EVENT_TYPES = { wedding:'فرح', birth:'مولود', gathering:'تجمّع عائلي', condolence:'عزاء', other:'مناسبة' };
+
+  function eventItem(ev, withDel){
+    return '<div class="item"><div class="body">' +
+      '<span class="tag ' + esc(ev.type) + '">' + esc(EVENT_TYPES[ev.type] || 'مناسبة') + '</span>' +
+      '<h4>' + esc(ev.title) + '</h4>' +
+      (ev.place ? '<p>📍 ' + esc(ev.place) + '</p>' : '') +
+      '<div class="meta">' + esc(fmtDate(ev.date)) + '</div></div>' +
+      (withDel ? '<button class="del" data-del="events" data-id="' + esc(ev.id) + '" aria-label="حذف">×</button>' : '') +
+      '</div>';
+  }
+  function newsItem(n, withDel){
+    return '<div class="item"><div class="body"><h4>' + esc(n.title) + '</h4><p>' + esc(n.body) + '</p>' +
+      '<div class="meta">' + esc(fmtDate(n.date)) + '</div></div>' +
+      (withDel ? '<button class="del" data-del="news" data-id="' + esc(n.id) + '" aria-label="حذف">×</button>' : '') +
+      '</div>';
+  }
+  function upcoming(){
+    var t = today();
+    return data.events.filter(function(e){ return e.date >= t; }).sort(function(a,b){ return a.date < b.date ? -1 : 1; });
+  }
+  function newsSorted(){ return data.news.slice().sort(function(a,b){ return a.date < b.date ? 1 : -1; }); }
+  function emptyMsg(t){ return '<div class="empty">' + t + '</div>'; }
+
+  function renderHome(){
+    var up = upcoming();
+    $('stMembers').textContent = data.members.length;
+    $('stEvents').textContent = up.length;
+    $('stNews').textContent = data.news.length;
+    $('homeEvents').innerHTML = up.length ? up.slice(0,3).map(function(e){ return eventItem(e,false); }).join('') : emptyMsg('لا توجد مناسبات قادمة حالياً');
+    var ns = newsSorted();
+    $('homeNews').innerHTML = ns.length ? ns.slice(0,3).map(function(n){ return newsItem(n,false); }).join('') : emptyMsg('لا توجد أخبار بعد');
+  }
+
+  function renderMembers(){
+    var q = ($('memberSearch').value || '').trim();
+    var list = data.members.filter(function(m){ return !q || (m.name + ' ' + (m.city||'') + ' ' + (m.relation||'')).indexOf(q) !== -1; });
+    $('membersList').innerHTML = list.length ? list.map(function(m){
+      var parent = byId(m.parent);
+      return '<div class="item">' + avatar(m) + '<div class="body"><h4>' + esc(m.name) + '</h4>' +
+        '<p>' + esc([m.relation, parent ? 'ابن/ابنة ' + parent.name : '', m.city].filter(Boolean).join(' • ')) + '</p>' +
+        (m.phone ? '<a class="meta" href="tel:' + esc(m.phone) + '" dir="ltr">' + esc(m.phone) + '</a>' : '') +
+        '</div>' + (m.id !== OMDA_ID ? '<button class="del" data-del="members" data-id="' + esc(m.id) + '" aria-label="حذف">×</button>' : '') + '</div>';
+    }).join('') : emptyMsg('لا يوجد أفراد بهذا الاسم');
+  }
+
+  function renderTree(){
+    function children(pid){ return data.members.filter(function(m){ return (m.parent || '') === pid && m.id !== pid; }); }
+    var seen = {};
+    function branch(m){
+      if (seen[m.id]) return '';
+      seen[m.id] = true;
+      var kids = children(m.id);
+      return '<li><span class="node' + (m.id === OMDA_ID ? ' root' : '') + '">' + avatar(m) + '<b>' + esc(m.name) + '</b></span>' +
+        (kids.length ? '<ul>' + kids.map(branch).join('') + '</ul>' : '') + '</li>';
+    }
+    // Roots: the Omda first, then anyone whose parent is missing.
+    var roots = data.members.filter(function(m){ return m.id === OMDA_ID || !m.parent || !byId(m.parent); });
+    roots.sort(function(a,b){ return (a.id === OMDA_ID ? 0 : 1) - (b.id === OMDA_ID ? 0 : 1); });
+    $('treeBox').innerHTML = '<ul>' + roots.map(branch).join('') + '</ul>';
+  }
+
+  function renderEvents(){
+    var up = upcoming();
+    var past = data.events.filter(function(e){ return e.date < today(); }).sort(function(a,b){ return a.date < b.date ? 1 : -1; });
+    var html = up.length ? up.map(function(e){ return eventItem(e,true); }).join('') : emptyMsg('لا توجد مناسبات قادمة. اضغط + لإضافة مناسبة');
+    if (past.length) html += '<div class="sec-head" style="margin-top:12px"><h3>مناسبات <span>سابقة</span></h3></div>' + past.map(function(e){ return eventItem(e,true); }).join('');
+    $('eventsList').innerHTML = html;
+  }
+
+  function renderNews(){
+    var ns = newsSorted();
+    $('newsList').innerHTML = ns.length ? ns.map(function(n){ return newsItem(n,true); }).join('') : emptyMsg('لا توجد أخبار. اضغط + لإضافة خبر');
+  }
+
+  function renderAll(){ renderHome(); renderMembers(); renderTree(); renderEvents(); renderNews(); }
+
+  // ===== navigation =====
+  function go(view){
+    current = view;
+    document.querySelectorAll('.view').forEach(function(v){ v.classList.toggle('active', v.id === 'view-' + view); });
+    document.querySelectorAll('nav.tabs button').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-go') === view); });
+    $('fabAdd').hidden = !(view === 'members' || view === 'tree' || view === 'events' || view === 'news');
+    window.scrollTo(0,0);
+  }
+  document.addEventListener('click', function(e){
+    var g = e.target.closest('[data-go]');
+    if (g) { go(g.getAttribute('data-go')); return; }
+    var d = e.target.closest('[data-del]');
+    if (d) {
+      if (!confirm('هل تريد الحذف؟')) return;
+      var col = d.getAttribute('data-del'), id = d.getAttribute('data-id');
+      data[col] = data[col].filter(function(x){ return x.id !== id; });
+      if (col === 'members') data.members.forEach(function(m){ if (m.parent === id) m.parent = ''; });
+      save(); renderAll();
+    }
+  });
+  $('memberSearch').addEventListener('input', renderMembers);
+
+  // ===== add sheet =====
+  var FORMS = {
+    members: { title: 'إضافة فرد للعائلة', fields: function(){
+      var opts = data.members.map(function(m){ return '<option value="' + esc(m.id) + '">' + esc(m.name) + '</option>'; }).join('');
+      return field('name','الاسم الكامل','text',true) + field('relation','الصلة (ابن، حفيد، زوجة...)','text') +
+        '<div class="field"><label>الأب / الأم في الشجرة</label><select name="parent"><option value="">— بدون —</option>' + opts + '</select></div>' +
+        field('city','المدينة','text') + field('phone','رقم الجوال','tel');
+    }},
+    events: { title: 'إضافة مناسبة', fields: function(){
+      var opts = Object.keys(EVENT_TYPES).map(function(k){ return '<option value="' + k + '">' + EVENT_TYPES[k] + '</option>'; }).join('');
+      return '<div class="field"><label>نوع المناسبة</label><select name="type">' + opts + '</select></div>' +
+        field('title','عنوان المناسبة','text',true) + field('date','التاريخ','date',true) + field('place','المكان','text');
+    }},
+    news: { title: 'إضافة خبر', fields: function(){
+      return field('title','عنوان الخبر','text',true) + '<div class="field"><label>التفاصيل</label><textarea name="body" rows="4" required></textarea></div>';
+    }}
+  };
+  function field(name,label,type,req){
+    return '<div class="field"><label>' + label + '</label><input name="' + name + '" type="' + type + '"' + (req ? ' required' : '') + (type==='date' ? ' value="' + today() + '"' : '') + '/></div>';
+  }
+  var formCol = null;
+  function openSheet(col){
+    formCol = col;
+    $('sheetTitle').textContent = FORMS[col].title;
+    $('sheetFields').innerHTML = FORMS[col].fields();
+    $('sheetBg').classList.add('open');
+    var first = $('sheetFields').querySelector('input,select,textarea'); if (first) first.focus();
+  }
+  function closeSheet(){ $('sheetBg').classList.remove('open'); formCol = null; }
+  $('fabAdd').addEventListener('click', function(){ openSheet(current === 'tree' ? 'members' : current); });
+  $('sheetCancel').addEventListener('click', closeSheet);
+  $('sheetBg').addEventListener('click', function(e){ if (e.target === this) closeSheet(); });
+  $('sheetForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var rec = { id: uid() };
+    new FormData(this).forEach(function(v,k){ rec[k] = String(v).trim(); });
+    if (formCol === 'news') rec.date = today();
+    data[formCol].push(rec);
+    save(); renderAll(); closeSheet();
+  });
+
+  // ===== Omda photo lightbox =====
+  $('omdaPhoto').addEventListener('click', function(){ $('lightbox').classList.add('open'); });
+  $('lightbox').addEventListener('click', function(){ this.classList.remove('open'); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') { $('lightbox').classList.remove('open'); closeSheet(); } });
+
+  renderAll();
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
+  }
+})();
+</script>
+</body>
+</html>
