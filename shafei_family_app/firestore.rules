@@ -52,8 +52,9 @@ service cloud.firestore {
         // أي فرد يسجل/يلغي حضوره هو فقط
         || (approved()
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['attendees'])
-          && request.resource.data.attendees.toSet()
-               .symmetricDifference(resource.data.attendees.toSet()) == [request.auth.uid].toSet());
+          && request.resource.data.attendees.toSet().difference(resource.data.attendees.toSet())
+               .union(resource.data.attendees.toSet().difference(request.resource.data.attendees.toSet()))
+               == [request.auth.uid].toSet());
 
       allow delete: if approved() && (resource.data.createdBy == request.auth.uid || admin());
     }
