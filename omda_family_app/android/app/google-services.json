@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "381960871316",
+    "project_id": "omda-family",
+    "storage_bucket": "omda-family.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:381960871316:android:052766b6ce16f603b4c381",
+        "android_client_info": {
+          "package_name": "com.alomda.omda_family"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGEl_WqgvfbAYbkHztrCzSS5U7MdjuKQY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
