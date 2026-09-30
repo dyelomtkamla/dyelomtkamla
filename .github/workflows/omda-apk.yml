@@ -1,0 +1,65 @@
+name: Build Omda Family APK
+
+on:
+  push:
+    branches: [main, claude/exciting-dirac-ljpb5s]
+    paths:
+      - 'omda_family_app/**'
+      - '.github/workflows/omda-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: omda_family_app
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Firebase is configured
+        id: fb
+        run: |
+          if grep -q FIREBASE_NOT_CONFIGURED lib/firebase_options.dart; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Firebase config for omda-family not added yet; the APK will not be published."
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+      - run: flutter build apk --release
+
+      - name: Rename APK
+        run: cp build/app/outputs/flutter-apk/app-release.apk omda-family.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: omda-family-apk
+          path: omda_family_app/omda-family.apk
+
+      - name: Publish download link
+        if: steps.fb.outputs.ready == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: omda-apk-${{ github.run_number }}
+          name: تطبيق عائلة العمدة - أندرويد (${{ github.run_number }})
+          body: نزّل ملف omda-family.apk على موبايل الأندرويد وافتحه للتثبيت.
+          target_commitish: ${{ github.sha }}
+          make_latest: true
+          files: omda_family_app/omda-family.apk
