@@ -264,7 +264,7 @@
   let actx = null, muted = store.get('masa-mute') === '1';
   $('muteBtn').textContent = muted ? '🔇' : '🔊';
   $('muteBtn').onclick = () => { muted = !muted; store.set('masa-mute', muted ? '1':'0'); $('muteBtn').textContent = muted ? '🔇' : '🔊';
-    if (muted) try { speechSynthesis.cancel(); } catch(e){} };
+    if (muted) { try { speechSynthesis.cancel(); } catch(e){} try { voiceSrc && voiceSrc.stop(); } catch(e){} clipEls.forEach(a => a.pause()); } };
   function beep(freqs, dur = 0.09, type = 'sine', vol = 0.15){
     if (muted) return;
     try {
@@ -295,12 +295,57 @@
     } catch(e){}
   }
   if ('speechSynthesis' in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+  // Masa's real voice: clips cut from a family video (her parts only)
+  const CLIPS = [1, 2, 3, 4].map(i => 'voice/masa' + i + '.mp3');
+  let clipBufs = [], clipRaw = [], voiceSrc = null, lastClip = -1;
+  CLIPS.forEach((u, i) => {
+    fetch(u).then(r => r.ok ? r.arrayBuffer() : Promise.reject()).then(b => { clipRaw[i] = b; }).catch(() => {});
+  });
+  const clipEls = CLIPS.map(u => { const a = new Audio(u); a.preload = 'auto'; return a; });
+  function audioCtx(){
+    try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); } catch(e){}
+    return actx;
+  }
+  function decodeClips(){
+    const ac = audioCtx(); if (!ac) return;
+    clipRaw.forEach((b, i) => {
+      if (!b || clipBufs[i]) return;
+      clipRaw[i] = null;
+      ac.decodeAudioData(b, buf => { clipBufs[i] = buf; }, () => {});
+    });
+  }
+  // rate < 1 = grumpy slow voice (for yucky veggies), > 1 = excited
+  function playVoice(rate){
+    let i; do { i = Math.random() * CLIPS.length | 0; } while (i === lastClip && CLIPS.length > 1);
+    lastClip = i;
+    decodeClips();
+    const ac = actx;
+    try {
+      if (ac && clipBufs[i]) {
+        if (voiceSrc) try { voiceSrc.stop(); } catch(e){}
+        const src = ac.createBufferSource(), g = ac.createGain();
+        src.buffer = clipBufs[i]; src.playbackRate.value = rate; g.gain.value = 0.9;
+        src.connect(g).connect(ac.destination); src.start(); voiceSrc = src;
+        return true;
+      }
+      clipEls.forEach(a => { try { a.pause(); } catch(e){} });
+      const a = clipEls[i];
+      if (a.readyState === 0 && a.error) return false;
+      a.currentTime = 0; a.playbackRate = rate; a.preservesPitch = false; a.webkitPreservesPitch = false;
+      const pr = a.play(); if (pr && pr.catch) pr.catch(() => {});
+      return true;
+    } catch(e){ return false; }
+  }
+  const realVoice = () => clipBufs.some(Boolean) || clipRaw.some(Boolean) || clipEls.some(a => a.readyState >= 2);
+
   // force: interrupt whatever she is saying; otherwise skip if she is mid-sentence
-  function say(text, force){
+  function say(text, force, rate){
     const now = performance.now();
     if (!force && bubble && bubble.life > 0.6 && now - lastTalk < 900) return;
     bubble = { text, life: 1.8 }; lastTalk = now;
-    if (muted || !('speechSynthesis' in window)) return;
+    if (muted) return;
+    if (realVoice() && playVoice(rate || 1)) return;
+    if (!('speechSynthesis' in window)) return;
     try {
       if (speechSynthesis.speaking) { if (!force) return; speechSynthesis.cancel(); }
       const u = new SpeechSynthesisUtterance(text.replace(/[^\u0600-\u06FF\s!?؟.,،]/g, ''));
@@ -390,6 +435,7 @@
     showBest();
     setTimeout(() => $('overScreen').classList.remove('hidden'), 500);
   }
+  addEventListener('pointerdown', () => decodeClips(), { once: true });
   $('playBtn').onclick = start; $('againBtn').onclick = start;
   $('homeBtn').onclick = () => { $('overScreen').classList.add('hidden'); $('startScreen').classList.remove('hidden'); state = 'menu'; drawAvatar(); };
 
@@ -444,7 +490,7 @@
         if (it.kind === 'bad') {
           lives--; combo = 0; mood = 'yuck'; moodT = 0.8; shake = 0.35; sfx.yuck();
           pop(ix, it.y - 20, EW[Math.random()*EW.length|0], '#d94040');
-          say(pick(LINES.bad[it.e] || ['إيييع!']), true);
+          say(pick(LINES.bad[it.e] || ['إيييع!']), true, 0.72);
           if (navigator.vibrate) try { navigator.vibrate(80); } catch(e){}
           if (lives <= 0) { updateHud(); gameOver(); return; }
         } else if (it.kind === 'heart') {
@@ -454,7 +500,7 @@
           combo++;
           const bonus = combo >= 5 ? 2 : 1, pts = it.p * bonus;
           score += pts; mood = 'happy'; moodT = 0.45;
-          if (it.kind === 'gem') say(pick(LINES.gem), true);
+          if (it.kind === 'gem') say(pick(LINES.gem), true, 1.2);
           else if (combo === 5 || combo % 10 === 0) say(pick(LINES.combo), true);
           else if (Math.random() < 0.45) say(pick(LINES.yum));
           if (it.kind === 'gem') { sfx.gem(); burst(ix, it.y, ['#7fe3ff', '#ffffff', '#f5c542']); pop(ix, it.y - 20, 'ماسة! +' + pts, '#1aa3d9'); }
