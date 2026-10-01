@@ -1,0 +1,20 @@
+@page "/not-found"
+@{
+    // Reached via status-code re-execution, so keep the original status (404/429/...) instead of 200.
+    var feature = HttpContext.Features.Get<Microsoft.AspNetCore.Diagnostics.IStatusCodeReExecuteFeature>();
+    if (feature is null) Response.StatusCode = 404;
+    ViewData["Back"] = true;
+    ViewData.SetSeo(new SeoMeta { Title = "الصفحة غير موجودة | لؤلؤة المستقل", Description = "الصفحة المطلوبة غير موجودة.", NoIndex = true });
+}
+
+<section class="hero">
+    <div class="pearl" aria-hidden="true"></div>
+    <h1>الصفحة غير موجودة</h1>
+    <p class="lead">ربما تم نقل الصفحة. تصفّح أقسامنا من هنا:</p>
+</section>
+<div class="svc-grid">
+    @foreach (var s in ServiceCatalog.All)
+    {
+        <partial name="_ServiceCard" model="s" />
+    }
+</div>

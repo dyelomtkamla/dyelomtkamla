@@ -1,0 +1,26 @@
+@page "/admin/login"
+@model LuluaServices.Pages.Admin.LoginModel
+@{
+    ViewData["Title"] = "تسجيل الدخول";
+}
+
+<section class="card login">
+    <h1>تسجيل الدخول</h1>
+    @if (Model.NotConfigured)
+    {
+        <p class="alert">
+            لم يتم ضبط كلمة مرور لوحة التحكم بعد. أنشئ بصمة كلمة المرور بالأمر
+            <code>dotnet run -- hash-password "كلمة-المرور"</code>
+            ثم ضعها في الإعداد <code>Admin:PasswordHash</code>.
+        </p>
+    }
+    else
+    {
+        <form method="post">
+            <div asp-validation-summary="All" class="form-err" role="alert"></div>
+            <label>اسم المستخدم<input asp-for="Username" autocomplete="username" dir="ltr" /></label>
+            <label>كلمة المرور<input asp-for="Password" autocomplete="current-password" dir="ltr" /></label>
+            <button class="btn btn-primary" type="submit">دخول</button>
+        </form>
+    }
+</section>

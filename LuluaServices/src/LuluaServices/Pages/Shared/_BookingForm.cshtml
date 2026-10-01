@@ -1,0 +1,49 @@
+@model BookingInput
+@*
+    Posts to /book. Field names are prefixed with "Input." so they bind to BookModel.Input.
+    Server-side validation is the source of truth; the browser attributes are only a convenience.
+*@
+<section class="card book" id="book" aria-labelledby="book-h">
+    <h2 id="book-h">@Svg.Icon("calendar") احجز خدمتك الآن</h2>
+    <p class="muted">املأ البيانات وسيصل طلبك مباشرة إلى فريقنا، ونتواصل معك لتأكيد الموعد والسعر.</p>
+    <form method="post" asp-page="/Book" novalidate>
+        <div asp-validation-summary="ModelOnly" class="form-err full" role="alert"></div>
+        <label>
+            الاسم
+            <input name="Input.Name" value="@Model.Name" required maxlength="100" autocomplete="name" placeholder="اسمك الكريم" />
+            <span class="field-err">@ViewData.ModelState["Input.Name"]?.Errors.FirstOrDefault()?.ErrorMessage</span>
+        </label>
+        <label>
+            رقم الجوال
+            <input name="Input.Phone" value="@Model.Phone" required type="tel" inputmode="tel" maxlength="16" autocomplete="tel" placeholder="05xxxxxxxx" />
+            <span class="field-err">@ViewData.ModelState["Input.Phone"]?.Errors.FirstOrDefault()?.ErrorMessage</span>
+        </label>
+        <label>
+            القسم
+            <select name="Input.Section" required>
+                @foreach (var s in ServiceCatalog.All)
+                {
+                    <option value="@s.Slug" selected="@(s.Slug == Model.Section)">@s.Name</option>
+                }
+            </select>
+            <span class="field-err">@ViewData.ModelState["Input.Section"]?.Errors.FirstOrDefault()?.ErrorMessage</span>
+        </label>
+        <label>
+            الحي / المدينة
+            <input name="Input.Area" value="@Model.Area" required maxlength="100" placeholder="مثال: حي النرجس" />
+            <span class="field-err">@ViewData.ModelState["Input.Area"]?.Errors.FirstOrDefault()?.ErrorMessage</span>
+        </label>
+        <label>
+            الموعد المفضّل
+            <input name="Input.PreferredDate" type="date" value="@Model.PreferredDate?.ToString("yyyy-MM-dd")" />
+            <span class="field-err">@ViewData.ModelState["Input.PreferredDate"]?.Errors.FirstOrDefault()?.ErrorMessage</span>
+        </label>
+        <label class="full">
+            تفاصيل الطلب
+            <textarea name="Input.Notes" rows="3" maxlength="1000" placeholder="صف الخدمة المطلوبة باختصار">@Model.Notes</textarea>
+            <span class="field-err">@ViewData.ModelState["Input.Notes"]?.Errors.FirstOrDefault()?.ErrorMessage</span>
+        </label>
+        <label class="hp" aria-hidden="true">لا تملأ هذا الحقل<input name="Input.Website" tabindex="-1" autocomplete="off" /></label>
+        <button class="btn btn-wa full" type="submit">@Svg.Icon("calendar") إرسال طلب الحجز</button>
+    </form>
+</section>

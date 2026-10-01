@@ -1,0 +1,6 @@
+@model ServiceSection
+<a class="svc" href="/@Model.Slug" style="--c:@Model.Color" data-search="@Model.SearchText">
+    <span class="svc-ic">@Svg.Icon(Model.Icon)</span>
+    <h3>@Model.Name</h3>
+    <p>@Model.Tagline</p>
+</a>

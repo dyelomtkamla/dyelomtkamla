@@ -1,0 +1,16 @@
+@page "/error"
+@model ErrorModel
+@{
+    ViewData["Back"] = true;
+    ViewData.SetSeo(new SeoMeta { Title = "حدث خطأ | لؤلؤة المستقل", Description = "حدث خطأ غير متوقع.", NoIndex = true });
+}
+
+<section class="hero">
+    <div class="pearl" aria-hidden="true"></div>
+    <h1>عذراً، حدث خطأ غير متوقع</h1>
+    <p class="lead">فضلاً حاول مرة أخرى، أو تواصل معنا مباشرة عبر واتساب أو الاتصال.</p>
+    @if (!string.IsNullOrEmpty(Model.RequestId))
+    {
+        <p class="muted" style="color:#cfe0e6">رمز الطلب: <code>@Model.RequestId</code></p>
+    }
+</section>

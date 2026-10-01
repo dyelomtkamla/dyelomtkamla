@@ -1,0 +1,110 @@
+@inject IOptions<BusinessOptions> BusinessOpts
+@{
+    var b = BusinessOpts.Value;
+    var seo = ViewData.GetSeo();
+    var canonical = b.Url(seo.Path);
+    var active = ViewData["Active"] as string ?? "";
+    var back = ViewData["Back"] is true;
+}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>@seo.Title</title>
+    <meta name="description" content="@seo.Description" />
+    @if (seo.NoIndex)
+    {
+        <meta name="robots" content="noindex, follow" />
+    }
+    else
+    {
+        <meta name="robots" content="index, follow, max-image-preview:large" />
+        <link rel="canonical" href="@canonical" />
+        <link rel="alternate" hreflang="ar" href="@canonical" />
+    }
+    <meta name="theme-color" content="@seo.ThemeColor" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ar_SA" />
+    <meta property="og:site_name" content="@b.Name" />
+    <meta property="og:title" content="@seo.Title" />
+    <meta property="og:description" content="@seo.Description" />
+    <meta property="og:url" content="@canonical" />
+    <meta property="og:image" content="@b.Url("/img/og.png")" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="@seo.Title" />
+    <meta name="twitter:description" content="@seo.Description" />
+    <meta name="twitter:image" content="@b.Url("/img/og.png")" />
+
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="/img/logo.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/img/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="@b.ShortName" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/assets/style.css" asp-append-version="true" />
+    @foreach (var ld in seo.JsonLd)
+    {
+        @Seo.JsonLdTag(ld)
+    }
+</head>
+<body style="@(ViewData["BodyStyle"] as string)">
+    <header class="topbar">
+        <div class="wrap topbar-in">
+            @if (back)
+            {
+                <a class="iconbtn" href="/" aria-label="رجوع للرئيسية">@Svg.Icon("back")</a>
+            }
+            else
+            {
+                <button class="iconbtn" id="installBtn" type="button" hidden aria-label="تثبيت التطبيق">@Svg.Icon("install")</button>
+            }
+            <a class="brand" href="/">
+                <img src="/img/logo.svg" width="38" height="38" alt="شعار @b.ShortName" />
+                <span><b>@b.ShortName</b><small>للخدمات المنزلية</small></span>
+            </a>
+            <a class="iconbtn" href="tel:@b.Phone" aria-label="اتصال">@Svg.Icon("phone")</a>
+        </div>
+    </header>
+
+    <main class="wrap">
+        @RenderBody()
+    </main>
+
+    <footer class="footer">
+        <div class="wrap">
+            <div class="foot-brand">
+                <img src="/img/logo.svg" width="44" height="44" alt="" loading="lazy" />
+                <div><b>@b.Name</b><small>@b.Hours</small></div>
+            </div>
+            <nav aria-label="أقسام المؤسسة">
+                <ul class="foot-links">
+                    @foreach (var s in ServiceCatalog.All)
+                    {
+                        <li><a href="/@s.Slug">@s.Name</a></li>
+                    }
+                </ul>
+            </nav>
+            <p class="copy">© @DateTime.UtcNow.Year @b.Name. جميع الحقوق محفوظة.</p>
+        </div>
+    </footer>
+
+    <a class="fab-wa" href="@b.WhatsAppLink("السلام عليكم، أرغب في الاستفسار عن خدماتكم")" target="_blank" rel="noopener" aria-label="تواصل عبر واتساب">@Svg.WhatsApp</a>
+    <nav class="tabbar" aria-label="التنقل السريع">
+        <a href="/" class="@(active == "home" ? "on" : null)">@Svg.Icon("home")<span>الرئيسية</span></a>
+        <a href="/#services" class="@(active == "services" ? "on" : null)">@Svg.Icon("grid")<span>الأقسام</span></a>
+        <a href="@(ViewData["BookHref"] as string ?? "#book")" class="@(active == "book" ? "on" : null)">@Svg.Icon("calendar")<span>احجز</span></a>
+        <a href="tel:@b.Phone">@Svg.Icon("phone")<span>اتصال</span></a>
+    </nav>
+    <script src="~/assets/app.js" asp-append-version="true" defer></script>
+</body>
+</html>

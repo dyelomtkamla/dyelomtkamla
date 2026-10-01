@@ -1,0 +1,61 @@
+@page "/{slug:regex(^[a-zA-Z-]+$)}"
+@model SectionModel
+@{
+    var s = Model.Section;
+    var b = Model.Business;
+}
+
+<nav class="crumbs" aria-label="مسار التنقل"><a href="/">الرئيسية</a> <span>/</span> <span aria-current="page">@s.Name</span></nav>
+
+<section class="hero hero-sec">
+    <span class="hero-ic">@Svg.Icon(s.Icon)</span>
+    <h1>@s.Name</h1>
+    <p class="lead">@s.Tagline</p>
+    <div class="chips">
+        @foreach (var f in s.Features)
+        {
+            <span>@Svg.Icon("check")@f</span>
+        }
+    </div>
+    <div class="hero-cta">
+        <a class="btn btn-wa" href="@b.WhatsAppLink("السلام عليكم، أرغب في طلب خدمة: " + s.Name)" target="_blank" rel="noopener">@Svg.WhatsApp اطلب عبر واتساب</a>
+        <a class="btn btn-ghost" href="#book">@Svg.Icon("calendar") نموذج الحجز</a>
+    </div>
+</section>
+
+<section class="card" aria-labelledby="about-h">
+    <h2 id="about-h">@s.Name مع @b.ShortName</h2>
+    <p>@s.Intro</p>
+</section>
+
+<section class="card" aria-labelledby="list-h">
+    <h2 id="list-h">خدمات قسم @s.Name</h2>
+    <ul class="sub-list">
+        @foreach (var x in s.Services)
+        {
+            <li>@Svg.Icon("check")<div><h3>@x.Name</h3><p>@x.Description</p></div></li>
+        }
+    </ul>
+</section>
+
+<partial name="_BookingForm" model="Model.Booking" />
+
+<section class="card" aria-labelledby="faq-h">
+    <h2 id="faq-h">أسئلة شائعة عن @s.Name</h2>
+    <div class="faq">
+        @foreach (var f in s.Faq)
+        {
+            <details><summary>@f.Question</summary><p>@f.Answer</p></details>
+        }
+    </div>
+</section>
+
+<section aria-labelledby="more-h">
+    <h2 id="more-h" class="sec-title">أقسام أخرى قد تهمك</h2>
+    <div class="svc-grid">
+        @foreach (var o in ServiceCatalog.All.Where(o => o.Slug != s.Slug))
+        {
+            <partial name="_ServiceCard" model="o" />
+        }
+    </div>
+</section>

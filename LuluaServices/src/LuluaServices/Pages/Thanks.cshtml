@@ -1,0 +1,28 @@
+@page "/book/thanks"
+@inject IOptions<BusinessOptions> BusinessOpts
+@{
+    var b = BusinessOpts.Value;
+    var id = TempData["BookingId"];
+    var waText = TempData["WhatsAppText"] as string ?? "السلام عليكم، أرسلت طلب حجز وأرغب في المتابعة";
+    ViewData["Back"] = true;
+    ViewData["BookHref"] = "/book";
+    ViewData.SetSeo(new SeoMeta { Title = "تم استلام طلبك | " + b.ShortName, Description = "تم استلام طلب الحجز.", Path = "/book/thanks", NoIndex = true });
+}
+
+<section class="hero thanks">
+    <div class="pearl" aria-hidden="true"></div>
+    <span class="hero-ic">@Svg.Icon("check")</span>
+    <h1>تم استلام طلبك بنجاح</h1>
+    @if (id is not null)
+    {
+        <p class="lead">رقم الطلب <b>#@id</b> لقسم @TempData["SectionName"]. سنتواصل معك قريباً لتأكيد الموعد.</p>
+    }
+    else
+    {
+        <p class="lead">سنتواصل معك قريباً لتأكيد الموعد.</p>
+    }
+    <div class="hero-cta">
+        <a class="btn btn-wa" href="@b.WhatsAppLink(waText)" target="_blank" rel="noopener">@Svg.WhatsApp تسريع الطلب عبر واتساب</a>
+        <a class="btn btn-ghost" href="/">العودة للرئيسية</a>
+    </div>
+</section>

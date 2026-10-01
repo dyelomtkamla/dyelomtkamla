@@ -1,0 +1,76 @@
+@page
+@model IndexModel
+@{
+    var b = Model.Business;
+    var why = new[]
+    {
+        ("badge", "فريق محترف", "فنيون مدرّبون وذوو خبرة في كل قسم."),
+        ("tag", "أسعار واضحة", "عرض سعر قبل البدء بدون رسوم مخفية."),
+        ("clock", "التزام بالمواعيد", "نصلك في الموعد المحدد دون تأخير."),
+        ("star", "ضمان الجودة", "ضمان مكتوب على الأعمال المنفذة."),
+    };
+    var steps = new[]
+    {
+        ("اختر القسم", "حدد الخدمة التي تحتاجها من أقسامنا الثمانية."),
+        ("أرسل طلبك", "عبر نموذج الحجز أو واتساب أو الاتصال المباشر."),
+        ("نؤكد الموعد", "نتواصل معك لتحديد الموعد والسعر."),
+        ("ننفّذ بإتقان", "يصلك الفريق وينجز العمل بضمان."),
+    };
+}
+
+<section class="hero">
+    <div class="pearl" aria-hidden="true"></div>
+    <h1>@b.Name</h1>
+    <p class="lead">كل ما يحتاجه بيتك في تطبيق واحد: ثمانية أقسام متخصصة بفريق محترف وضمان على الجودة.</p>
+    <div class="hero-cta">
+        <a class="btn btn-wa" href="#book">@Svg.Icon("calendar") احجز الآن</a>
+        <a class="btn btn-ghost" href="tel:@b.Phone">@Svg.Icon("phone") اتصل بنا</a>
+    </div>
+</section>
+
+<section id="services" aria-labelledby="svc-h">
+    <div class="sec-head"><h2 id="svc-h">أقسامنا</h2><span class="muted">@ServiceCatalog.All.Count أقسام</span></div>
+    <label class="search">
+        @Svg.Icon("grid")
+        <input id="svcSearch" type="search" placeholder="ابحث عن خدمة... مثل: صراصير، كنب، مكيف" aria-label="ابحث عن خدمة" />
+    </label>
+    <div class="svc-grid" id="svcGrid">
+        @foreach (var s in ServiceCatalog.All)
+        {
+            <partial name="_ServiceCard" model="s" />
+        }
+    </div>
+    <p class="muted empty" id="svcEmpty" hidden>لا توجد نتائج، جرّب كلمة أخرى أو تواصل معنا مباشرة.</p>
+</section>
+
+<section aria-labelledby="why-h">
+    <h2 id="why-h" class="sec-title">لماذا لؤلؤة المستقل؟</h2>
+    <div class="why-grid">
+        @foreach (var (icon, title, text) in why)
+        {
+            <div class="why">@Svg.Icon(icon)<h3>@title</h3><p>@text</p></div>
+        }
+    </div>
+</section>
+
+<section class="card" aria-labelledby="steps-h">
+    <h2 id="steps-h">كيف تطلب الخدمة؟</h2>
+    <ol class="steps">
+        @foreach (var (title, text) in steps)
+        {
+            <li><b>@title</b><span>@text</span></li>
+        }
+    </ol>
+</section>
+
+<partial name="_BookingForm" model="Model.Booking" />
+
+<section class="card" aria-labelledby="faq-h">
+    <h2 id="faq-h">الأسئلة الشائعة</h2>
+    <div class="faq">
+        @foreach (var f in Model.Faqs)
+        {
+            <details><summary>@f.Question</summary><p>@f.Answer</p></details>
+        }
+    </div>
+</section>

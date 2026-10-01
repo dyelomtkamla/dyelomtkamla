@@ -1,0 +1,107 @@
+@page "/admin"
+@model LuluaServices.Pages.Admin.IndexModel
+@{
+    ViewData["Title"] = "طلبات الحجز";
+    var statuses = Enum.GetValues<BookingStatus>();
+    var saudiTime = LuluaServices.Pages.Admin.IndexModel.SaudiTime;
+}
+
+@if (!string.IsNullOrEmpty(Model.Flash))
+{
+    <p class="flash" role="status">@Model.Flash</p>
+}
+
+<section class="stats">
+    <a class="stat @(Model.Status is null ? "on" : null)" href="/admin"><b>@Model.Total</b><span>كل الطلبات</span></a>
+    @foreach (var s in statuses)
+    {
+        <a class="stat st-@s.ToString().ToLowerInvariant() @(Model.Status == s ? "on" : null)" href="/admin?status=@s">
+            <b>@(Model.Counts.GetValueOrDefault(s))</b><span>@s.Arabic()</span>
+        </a>
+    }
+</section>
+
+<form class="filters card" method="get">
+    <input name="q" value="@Model.Q" type="search" placeholder="بحث بالاسم أو الجوال أو الحي أو رقم الطلب" aria-label="بحث" />
+    <select name="section" aria-label="القسم">
+        <option value="">كل الأقسام</option>
+        @foreach (var s in ServiceCatalog.All)
+        {
+            <option value="@s.Slug" selected="@(Model.Section == s.Slug)">@s.Name</option>
+        }
+    </select>
+    <select name="status" aria-label="الحالة">
+        <option value="">كل الحالات</option>
+        @foreach (var s in statuses)
+        {
+            <option value="@s" selected="@(Model.Status == s)">@s.Arabic()</option>
+        }
+    </select>
+    <button class="btn btn-primary btn-sm" type="submit">تصفية</button>
+    <a class="btn btn-outline btn-sm" asp-page-handler="Export" asp-route-status="@Model.Status" asp-route-section="@Model.Section" asp-route-q="@Model.Q">تصدير Excel</a>
+</form>
+
+@if (Model.Bookings.Count == 0)
+{
+    <p class="card muted empty-state">لا توجد طلبات مطابقة.</p>
+}
+
+<div class="bookings">
+    @foreach (var b in Model.Bookings)
+    {
+        var section = ServiceCatalog.Find(b.SectionSlug);
+        var created = TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(b.CreatedAtUtc, DateTimeKind.Utc), saudiTime);
+        var waPhone = b.Phone.StartsWith("05") ? "966" + b.Phone[1..] : b.Phone.TrimStart('+');
+        <article class="booking card" style="--c:@(section?.Color ?? "#1aa0a8")">
+            <header>
+                <div>
+                    <span class="bk-id">#@b.Id</span>
+                    <span class="badge st-@b.Status.ToString().ToLowerInvariant()">@b.Status.Arabic()</span>
+                </div>
+                <time datetime="@b.CreatedAtUtc.ToString("o")">@created.ToString("yyyy-MM-dd HH:mm")</time>
+            </header>
+            <h2>@b.Name</h2>
+            <dl>
+                <dt>القسم</dt><dd>@(section?.Name ?? b.SectionSlug)</dd>
+                <dt>الجوال</dt><dd dir="ltr"><a href="tel:@b.Phone">@b.Phone</a></dd>
+                <dt>الحي / المدينة</dt><dd>@b.Area</dd>
+                <dt>الموعد المفضّل</dt><dd>@(b.PreferredDate?.ToString("yyyy-MM-dd") ?? "—")</dd>
+                @if (b.Notes is not null)
+                {
+                    <dt>التفاصيل</dt><dd class="pre">@b.Notes</dd>
+                }
+            </dl>
+            <div class="bk-actions">
+                <a class="btn btn-sm btn-wa" href="https://wa.me/@waPhone" target="_blank" rel="noopener">@Svg.WhatsApp واتساب</a>
+                <a class="btn btn-sm btn-outline" href="tel:@b.Phone">@Svg.Icon("phone") اتصال</a>
+            </div>
+            <form method="post" asp-page-handler="Update" asp-route-id="@b.Id" asp-route-status="@Model.Status" asp-route-section="@Model.Section" asp-route-q="@Model.Q" asp-route-p="@Model.PageNumber" class="bk-update">
+                <label>الحالة
+                    <select name="newStatus">
+                        @foreach (var s in statuses)
+                        {
+                            <option value="@s" selected="@(b.Status == s)">@s.Arabic()</option>
+                        }
+                    </select>
+                </label>
+                <label class="grow">ملاحظات الإدارة
+                    <input name="adminNotes" value="@b.AdminNotes" maxlength="1000" placeholder="مثال: تم تحديد الموعد الساعة 5 مساءً" />
+                </label>
+                <button class="btn btn-primary btn-sm" type="submit">حفظ</button>
+            </form>
+            <form method="post" asp-page-handler="Delete" asp-route-id="@b.Id" asp-route-status="@Model.Status" asp-route-section="@Model.Section" asp-route-q="@Model.Q" asp-route-p="@Model.PageNumber" data-confirm="حذف الطلب #@b.Id نهائياً؟">
+                <button class="link-danger" type="submit">حذف الطلب</button>
+            </form>
+        </article>
+    }
+</div>
+
+@if (Model.PageCount > 1)
+{
+    <nav class="pager" aria-label="الصفحات">
+        @for (var i = 1; i <= Model.PageCount; i++)
+        {
+            <a class="@(i == Model.PageNumber ? "on" : null)" href="/admin?p=@i&status=@Model.Status&section=@Model.Section&q=@Uri.EscapeDataString(Model.Q ?? "")">@i</a>
+        }
+    </nav>
+}
