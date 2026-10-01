@@ -264,7 +264,7 @@
   let actx = null, muted = store.get('masa-mute') === '1';
   $('muteBtn').textContent = muted ? '🔇' : '🔊';
   $('muteBtn').onclick = () => { muted = !muted; store.set('masa-mute', muted ? '1':'0'); $('muteBtn').textContent = muted ? '🔇' : '🔊';
-    if (muted) { try { speechSynthesis.cancel(); } catch(e){} try { voiceSrc && voiceSrc.stop(); } catch(e){} clipEls.forEach(a => a.pause()); } };
+    if (muted) { try { speechSynthesis.cancel(); } catch(e){} try { voiceSrc && voiceSrc.stop(); } catch(e){} clipEls.concat(Object.values(lineEls)).forEach(a => a.pause()); } };
   function beep(freqs, dur = 0.09, type = 'sine', vol = 0.15){
     if (muted) return;
     try {
@@ -295,6 +295,36 @@
     } catch(e){}
   }
   if ('speechSynthesis' in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+  // Every line pre-rendered in Masa's voice (pitch + timbre matched to her video)
+  const LINE_VOICE = {"أنا ماسة! يلا نلعب!": "start1.mp3", "هاتوا الحلويات بقى!": "start2.mp3", "ماسة جاهزة!": "start3.mp3", "يمّي!": "yum1.mp3", "الله! حلو أوي!": "yum2.mp3", "كمان كمان!": "yum3.mp3", "هممم لذيذ!": "yum4.mp3", "دي بتاعتي!": "yum5.mp3", "ماسة لقت ماسة!": "gem1.mp3", "واو! ماسة بتلمع!": "gem2.mp3", "قلبي رجع!": "heart1.mp3", "بحبكم!": "heart2.mp3", "أنا ملكة الحلويات!": "combo1.mp3", "محدش يقدر عليا!": "combo2.mp3", "أنا شاطرة!": "level1.mp3", "أسرع أسرع!": "level2.mp3", "أنا جعانة!": "idle1.mp3", "فين الشوكولاتة؟": "idle2.mp3", "بابا هات مصاصة!": "idle3.mp3", "إيييع بروكلي!": "bad_broc1.mp3", "بصل؟! لأ لأ!": "bad_onion1.mp3", "حرااااق!": "bad_chili1.mp3", "خس؟! لأ يا ماما!": "bad_lettuce1.mp3", "خلاص... تاني تاني!": "over1.mp3", "أنا لسه عايزة ألعب!": "over2.mp3", "أنا بطلة! رقم قياسي!": "record1.mp3", "أنا ماسة الشقية!": "poke1.mp3", "متزغزغنيش!": "poke2.mp3", "هيهيهي!": "poke3.mp3"};
+  const lineBufs = {}, lineEls = {};
+  function loadLine(text){
+    const f = LINE_VOICE[text]; if (!f || lineBufs[text] || lineEls[text]) return;
+    lineEls[text] = new Audio('voice/' + f);
+    fetch('voice/' + f).then(r => r.ok ? r.arrayBuffer() : Promise.reject()).then(b => {
+      const ac = audioCtx(); if (ac) ac.decodeAudioData(b, buf => { lineBufs[text] = buf; }, () => {});
+    }).catch(() => {});
+  }
+  function preloadLines(){ Object.keys(LINE_VOICE).forEach(loadLine); }
+  function playBuf(buf, rate){
+    if (voiceSrc) try { voiceSrc.stop(); } catch(e){}
+    const src = actx.createBufferSource(), g = actx.createGain();
+    src.buffer = buf; src.playbackRate.value = rate; g.gain.value = 0.95;
+    src.connect(g).connect(actx.destination); src.start(); voiceSrc = src;
+  }
+  function playLine(text){
+    if (!LINE_VOICE[text]) return false;
+    loadLine(text);
+    try {
+      if (actx && lineBufs[text]) { playBuf(lineBufs[text], 1); return true; }
+      if (voiceSrc) try { voiceSrc.stop(); } catch(e){}
+      Object.values(lineEls).concat(clipEls).forEach(a => { try { a.pause(); } catch(e){} });
+      const a = lineEls[text]; a.currentTime = 0;
+      const pr = a.play(); if (pr && pr.catch) pr.catch(() => {});
+      return true;
+    } catch(e){ return false; }
+  }
+
   // Masa's real voice: clips cut from a family video (her parts only)
   const CLIPS = [1, 2, 3, 4].map(i => 'voice/masa' + i + '.mp3');
   let clipBufs = [], clipRaw = [], voiceSrc = null, lastClip = -1;
@@ -321,13 +351,7 @@
     decodeClips();
     const ac = actx;
     try {
-      if (ac && clipBufs[i]) {
-        if (voiceSrc) try { voiceSrc.stop(); } catch(e){}
-        const src = ac.createBufferSource(), g = ac.createGain();
-        src.buffer = clipBufs[i]; src.playbackRate.value = rate; g.gain.value = 0.9;
-        src.connect(g).connect(ac.destination); src.start(); voiceSrc = src;
-        return true;
-      }
+      if (ac && clipBufs[i]) { playBuf(clipBufs[i], rate); return true; }
       clipEls.forEach(a => { try { a.pause(); } catch(e){} });
       const a = clipEls[i];
       if (a.readyState === 0 && a.error) return false;
@@ -344,6 +368,7 @@
     if (!force && bubble && bubble.life > 0.6 && now - lastTalk < 900) return;
     bubble = { text, life: 1.8 }; lastTalk = now;
     if (muted) return;
+    if (playLine(text)) return;
     if (realVoice() && playVoice(rate || 1)) return;
     if (!('speechSynthesis' in window)) return;
     try {
@@ -358,21 +383,21 @@
   const pick = a => a[Math.random()*a.length|0];
   const LINES = {
     start: ['أنا ماسة! يلا نلعب!', 'هاتوا الحلويات بقى!', 'ماسة جاهزة!'],
-    yum: ['يمّي!', 'الله! حلو أوي!', 'كمان كمان!', 'هممم لذيذ!', 'دي بتاعتي!', 'هاااا!'],
-    gem: ['ماسة لقت ماسة!', 'واو! ماسة بتلمع!', 'دي أحلى ماسة!'],
+    yum: ['يمّي!', 'الله! حلو أوي!', 'كمان كمان!', 'هممم لذيذ!', 'دي بتاعتي!'],
+    gem: ['ماسة لقت ماسة!', 'واو! ماسة بتلمع!'],
     heart: ['قلبي رجع!', 'بحبكم!'],
-    combo: ['أنا ملكة الحلويات!', 'محدش يقدر عليا!', 'شوفوني يا جماعة!'],
-    level: ['أنا شاطرة!', 'أسرع أسرع!', 'سهلة دي!'],
-    idle: ['هاتوا حلويات!', 'أنا جعانة!', 'فين الشوكولاتة؟', 'بابا هات مصاصة!'],
+    combo: ['أنا ملكة الحلويات!', 'محدش يقدر عليا!'],
+    level: ['أنا شاطرة!', 'أسرع أسرع!'],
+    idle: ['أنا جعانة!', 'فين الشوكولاتة؟', 'بابا هات مصاصة!'],
     bad: {
-      '🥦': ['إيييع بروكلي!', 'مش باكل بروكلي!'],
-      '🧅': ['بصل؟! لأ لأ!', 'ريحته وحشة!'],
-      '🌶️': ['حرااااق!', 'آآآه بُقي!'],
-      '🥬': ['خس؟! لأ يا ماما!', 'مش أرنب أنا!']
+      '🥦': ['إيييع بروكلي!'],
+      '🧅': ['بصل؟! لأ لأ!'],
+      '🌶️': ['حرااااق!'],
+      '🥬': ['خس؟! لأ يا ماما!']
     },
     over: ['خلاص... تاني تاني!', 'أنا لسه عايزة ألعب!'],
     record: ['أنا بطلة! رقم قياسي!'],
-    poke: ['أنا ماسة الشقية!', 'متزغزغنيش!', 'هيهيهي!', 'بحب الحلويات!']
+    poke: ['أنا ماسة الشقية!', 'متزغزغنيش!', 'هيهيهي!']
   };
 
   // ---------- Game state ----------
@@ -435,7 +460,7 @@
     showBest();
     setTimeout(() => $('overScreen').classList.remove('hidden'), 500);
   }
-  addEventListener('pointerdown', () => decodeClips(), { once: true });
+  addEventListener('pointerdown', () => { decodeClips(); preloadLines(); }, { once: true });
   $('playBtn').onclick = start; $('againBtn').onclick = start;
   $('homeBtn').onclick = () => { $('overScreen').classList.add('hidden'); $('startScreen').classList.remove('hidden'); state = 'menu'; drawAvatar(); };
 
