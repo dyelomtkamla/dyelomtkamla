@@ -1,0 +1,56 @@
+{
+  "name": "مؤسسة لؤلؤة المستقل للخدمات المنزلية",
+  "short_name": "لؤلؤة المستقل",
+  "id": "./",
+  "description": "اطلب خدمات مكافحة الحشرات والتنظيف والصيانة والعزل ونقل الأثاث والمسابح والمقاولات والديكور.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f7f5f0",
+  "theme_color": "#0b3b4f",
+  "categories": [
+    "lifestyle",
+    "business"
+  ],
+  "icons": [
+    {
+      "src": "img/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "img/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "img/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "مكافحة الحشرات",
+      "url": "./pest-control/"
+    },
+    {
+      "name": "خدمات التنظيف",
+      "url": "./cleaning/"
+    },
+    {
+      "name": "خدمات الصيانة",
+      "url": "./maintenance/"
+    },
+    {
+      "name": "خدمات العزل",
+      "url": "./insulation/"
+    }
+  ]
+}
