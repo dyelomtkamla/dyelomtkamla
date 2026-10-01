@@ -1,0 +1,15 @@
+@page
+@model ErrorModel
+@{
+    var ar = SiteText.For(Request).Lang == "ar";
+    var notFound = Request.Query["code"] == "404";
+    ViewData["Title"] = notFound ? (ar ? "الصفحة غير موجودة | دار" : "Page not found | Dar") : (ar ? "حدث خطأ | دار" : "Error | Dar");
+    ViewData["NoIndex"] = true;
+}
+<section class="sec">
+    <div class="wrap narrow prose center">
+        <h1>@(notFound ? "404" : (ar ? "حدث خطأ" : "Something went wrong"))</h1>
+        <p>@(notFound ? (ar ? "الصفحة اللي تدور عليها مو موجودة." : "The page you're looking for doesn't exist.") : (ar ? "حاول مرة ثانية بعد شوي." : "Please try again shortly."))</p>
+        <p><a class="btn" href="@(ar ? "/" : "/en")">@(ar ? "الرئيسية" : "Home")</a></p>
+    </div>
+</section>

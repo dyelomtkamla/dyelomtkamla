@@ -1,0 +1,36 @@
+@page
+@{
+    var ar = SiteText.For(Request).Lang == "ar";
+    ViewData["Title"] = ar ? "سياسة الخصوصية | دار" : "Privacy policy | Dar";
+    ViewData["Description"] = ar
+        ? "كيف يجمع دار بيانات قائمة الانتظار ويستخدمها ويحميها."
+        : "How Dar collects, uses and protects waitlist data.";
+    ViewData["ArPath"] = "/privacy";
+    ViewData["EnPath"] = "/en/privacy";
+}
+<section class="sec">
+    <div class="wrap narrow prose">
+        @if (ar)
+        {
+            <h1>سياسة الخصوصية</h1>
+            <p>نجمع فقط الاسم ووسيلة التواصل والدولة ونوع المستخدم عند التسجيل في قائمة الانتظار، ونستخدمها لإرسال دعوة الإطلاق فقط.</p>
+            <ul>
+                <li>لا نبيع بياناتك ولا نشاركها مع أي طرف للتسويق.</li>
+                <li>لا نتتبّع الموقع ولا نسجّل أي محادثة بدون علم الطرفين.</li>
+                <li>نلتزم بأنظمة حماية البيانات الشخصية في دول الخليج، ومنها نظام حماية البيانات الشخصية في السعودية وقانون حماية البيانات الشخصية في الإمارات.</li>
+                <li>تقدر تطلب حذف بياناتك في أي وقت بمراسلتنا.</li>
+            </ul>
+        }
+        else
+        {
+            <h1>Privacy policy</h1>
+            <p>When you join the waitlist we collect only your name, contact, country and user type, and we use them only to send your launch invite.</p>
+            <ul>
+                <li>We never sell your data or share it for marketing.</li>
+                <li>We never track location or record conversations without both sides knowing.</li>
+                <li>We follow Gulf personal data protection laws, including Saudi Arabia's PDPL and the UAE's PDPL.</li>
+                <li>You can ask us to delete your data at any time.</li>
+            </ul>
+        }
+    </div>
+</section>

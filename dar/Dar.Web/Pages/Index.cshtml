@@ -1,0 +1,211 @@
+@page
+@model IndexModel
+@inject IConfiguration Config
+@{
+    var t = Model.T;
+    var baseUrl = (Config["Site:BaseUrl"] is { Length: > 0 } u ? u : $"{Request.Scheme}://{Request.Host}").TrimEnd('/');
+    var jsonLd = System.Text.Json.JsonSerializer.Serialize(new Dictionary<string, object>
+    {
+        ["@context"] = "https://schema.org",
+        ["@graph"] = new object[]
+        {
+            new Dictionary<string, object>
+            {
+                ["@type"] = "Organization", ["@id"] = baseUrl + "/#org", ["name"] = "Dar",
+                ["url"] = baseUrl + "/", ["logo"] = baseUrl + "/img/icon-512.png",
+                ["areaServed"] = new[] { "SA", "AE", "KW", "QA", "BH", "OM" },
+            },
+            new Dictionary<string, object>
+            {
+                ["@type"] = "WebSite", ["@id"] = baseUrl + "/#site", ["name"] = "Dar",
+                ["url"] = baseUrl + "/", ["inLanguage"] = new[] { "ar", "en" },
+                ["publisher"] = new Dictionary<string, object> { ["@id"] = baseUrl + "/#org" },
+            },
+            new Dictionary<string, object>
+            {
+                ["@type"] = "MobileApplication", ["name"] = "Dar", ["description"] = t.Description,
+                ["operatingSystem"] = "Android, iOS", ["applicationCategory"] = "LifestyleApplication",
+                ["inLanguage"] = t.Lang, ["url"] = baseUrl + t.Home,
+                ["offers"] = new Dictionary<string, object> { ["@type"] = "Offer", ["price"] = "0", ["priceCurrency"] = "SAR" },
+                ["publisher"] = new Dictionary<string, object> { ["@id"] = baseUrl + "/#org" },
+            },
+            new Dictionary<string, object>
+            {
+                ["@type"] = "FAQPage", ["inLanguage"] = t.Lang,
+                ["mainEntity"] = t.Faqs.Select(f => new Dictionary<string, object>
+                {
+                    ["@type"] = "Question", ["name"] = f.Q,
+                    ["acceptedAnswer"] = new Dictionary<string, object> { ["@type"] = "Answer", ["text"] = f.A },
+                }).ToArray(),
+            },
+        },
+    });
+}
+@section Head {
+    <script type="application/ld+json">@Html.Raw(jsonLd)</script>
+}
+
+<section class="hero">
+    <div class="wrap hero-in">
+        <div class="hero-copy">
+            <span class="badge">@t.HeroBadge</span>
+            <h1>@t.HeroTitle <span class="accent">@t.HeroAccent</span></h1>
+            <p class="lead">@t.HeroSub</p>
+            <div class="cta-row">
+                <a class="btn" href="#join">@t.HeroCta</a>
+                <a class="btn btn-ghost" href="#features">@t.HeroCta2</a>
+            </div>
+            <div class="stores" aria-label="@t.StoreSoon">
+                <span class="store">App Store <small>@t.StoreSoon</small></span>
+                <span class="store">▶ Google Play <small>@t.StoreSoon</small></span>
+            </div>
+        </div>
+
+        <div class="phone" role="img" aria-label="@t.ChatFrom → @t.ChatTo">
+            <div class="phone-notch"></div>
+            <div class="chat">
+                <div class="chat-head"><span class="dot"></span> Maria · Tagalog 🇵🇭</div>
+                <div class="bubble me">
+                    <span>@t.ChatFrom</span>
+                    <small dir="ltr">→ @t.ChatTo</small>
+                </div>
+                <div class="bubble them" dir="ltr">
+                    <span>@t.ChatReply</span>
+                    <small dir="@t.Dir">→ @t.ChatReplyTr</small>
+                </div>
+                <div class="task">@t.ChatTask</div>
+                <div class="mic" aria-hidden="true">🎙️</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="sec">
+    <div class="wrap">
+        <h2>@t.ProblemTitle</h2>
+        <div class="grid g3">
+            @foreach (var c in t.Problems)
+            {
+                <article class="card problem"><div class="ic">@c.Icon</div><h3>@c.Title</h3><p>@c.Body</p></article>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="sec alt" id="features">
+    <div class="wrap">
+        <h2>@t.FamilyTitle</h2>
+        <p class="sub">@t.FamilySub</p>
+        <div class="grid g3">
+            @foreach (var c in t.FamilyFeatures)
+            {
+                <article class="card"><div class="ic">@c.Icon</div><h3>@c.Title</h3><p>@c.Body</p></article>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="sec" id="workers">
+    <div class="wrap">
+        <h2>@t.WorkerTitle</h2>
+        <p class="sub">@t.WorkerSub</p>
+        <div class="grid g4">
+            @foreach (var c in t.WorkerFeatures)
+            {
+                <article class="card"><div class="ic">@c.Icon</div><h3>@c.Title</h3><p>@c.Body</p></article>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="sec alt">
+    <div class="wrap">
+        <h2>@t.StepsTitle</h2>
+        <ol class="steps">
+            @foreach (var s in t.Steps)
+            {
+                <li><span class="num">@s.Icon</span><h3>@s.Title</h3><p>@s.Body</p></li>
+            }
+        </ol>
+    </div>
+</section>
+
+<section class="sec">
+    <div class="wrap pledge">
+        <div>
+            <h2>@t.PledgeTitle</h2>
+            <p>@t.PledgeBody</p>
+            <ul>
+                @foreach (var p in t.PledgePoints)
+                {
+                    <li>@p</li>
+                }
+            </ul>
+        </div>
+        <div>
+            <h3>@t.LanguagesTitle</h3>
+            <ul class="langs">
+                @foreach (var l in SiteText.SupportedLanguages)
+                {
+                    <li>@l</li>
+                }
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section class="sec alt" id="faq">
+    <div class="wrap narrow">
+        <h2>@t.FaqTitle</h2>
+        @foreach (var f in t.Faqs)
+        {
+            <details class="faq"><summary>@f.Q</summary><p>@f.A</p></details>
+        }
+    </div>
+</section>
+
+<section class="sec join" id="join">
+    <div class="wrap narrow">
+        <h2>@t.JoinTitle</h2>
+        <p class="sub">@t.JoinSub</p>
+
+        @if (Model.Status is not null)
+        {
+            var (cls, msg) = Model.Status switch
+            {
+                "joined" => ("ok", t.Joined),
+                "exists" => ("ok", t.AlreadyJoined),
+                _ => ("err", t.Invalid),
+            };
+            <p class="alert @cls" role="status">@msg</p>
+        }
+
+        <form method="post" action="@t.Home#join" asp-antiforgery="true" class="form">
+            <label>
+                <span>@t.FieldName</span>
+                <input asp-for="Form.Name" autocomplete="name" required minlength="2" maxlength="80" />
+            </label>
+            <label>
+                <span>@t.FieldContact</span>
+                <input asp-for="Form.Contact" autocomplete="tel" inputmode="email" required maxlength="120" placeholder="@t.FieldContactHint" dir="ltr" />
+            </label>
+            <label>
+                <span>@t.FieldCountry</span>
+                <select asp-for="Form.Country">
+                    @foreach (var c in t.Countries)
+                    {
+                        <option value="@c.Value">@c.Label</option>
+                    }
+                </select>
+            </label>
+            <fieldset>
+                <legend>@t.FieldRole</legend>
+                @foreach (var r in t.Roles)
+                {
+                    <label class="chip"><input type="radio" name="Form.Role" value="@r.Value" checked="@(Model.Form.Role == r.Value)" /> @r.Label</label>
+                }
+            </fieldset>
+            <button class="btn btn-wide" type="submit">@t.Submit</button>
+        </form>
+    </div>
+</section>
