@@ -1,4 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
 import { Alert, Linking, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Button, StatusBadge } from '../../components/ui';
 import { daysUntil, formatGregorian, formatHijri, reminderLabel, remainingLabel, statusOf } from '../../lib/dates';
@@ -11,6 +12,8 @@ export default function DocDetails() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { docs, removeDoc } = useStore();
   const doc = docs.find((d) => d.id === id);
+  // على الويب لا توجد نوافذ تأكيد، فنطلب ضغطة ثانية للتأكيد
+  const [armed, setArmed] = useState(false);
 
   if (!doc) {
     return (
@@ -33,7 +36,8 @@ export default function DocDetails() {
       router.back();
     };
     if (Platform.OS === 'web') {
-      if (globalThis.confirm?.('حذف هذا المستند وتذكيراته؟')) doIt();
+      if (armed) doIt();
+      else setArmed(true);
       return;
     }
     Alert.alert('حذف المستند', 'سيتم حذف المستند وإلغاء تذكيراته.', [
@@ -81,7 +85,7 @@ export default function DocDetails() {
         onPress={() => router.push({ pathname: '/add', params: { id: doc.id } })}
         style={{ marginTop: 10 }}
       />
-      <Button title="حذف المستند" variant="danger" onPress={confirmDelete} style={{ marginTop: 10 }} />
+      <Button title={armed ? 'اضغط مرة أخرى لتأكيد الحذف' : 'حذف المستند'} variant="danger" onPress={confirmDelete} style={{ marginTop: 10 }} />
     </ScrollView>
   );
 }

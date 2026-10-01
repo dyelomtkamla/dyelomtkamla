@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Button } from '../components/ui';
 import { FREE_LIMIT, useStore } from '../lib/store';
@@ -30,6 +31,7 @@ const PLANS = [
 export default function Pro() {
   const t = useTheme();
   const { settings, updateSettings } = useStore();
+  const [notice, setNotice] = useState<string | null>(null);
 
   const subscribe = async () => {
     if (__DEV__) {
@@ -39,7 +41,7 @@ export default function Pro() {
       return;
     }
     const msg = 'الاشتراك سيتوفر قريباً عبر المتجر.';
-    if (Platform.OS === 'web') globalThis.alert?.(msg);
+    if (Platform.OS === 'web') setNotice(msg);
     else Alert.alert('قريباً', msg);
   };
 
@@ -69,6 +71,7 @@ export default function Pro() {
         onPress={subscribe}
         style={{ marginTop: 8 }}
       />
+      {notice && <Text style={[styles.notice, { color: t.primary }]}>{notice}</Text>}
       <Button title="ليس الآن" variant="ghost" onPress={() => router.back()} style={{ marginTop: 10 }} />
     </ScrollView>
   );
@@ -82,5 +85,6 @@ const styles = StyleSheet.create({
   planName: { fontSize: 18, fontWeight: '800' },
   planPrice: { fontSize: 22, fontWeight: '800', marginTop: 4 },
   planYearly: { fontSize: 13, marginBottom: 10 },
+  notice: { fontSize: 15, fontWeight: '700', textAlign: 'center', marginTop: 10 },
   feature: { fontSize: 15, lineHeight: 26 },
 });
