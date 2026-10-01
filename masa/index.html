@@ -38,7 +38,11 @@
   .btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--pink-deep)}
   .btn.alt{font-family:'Tajawal',sans-serif;font-weight:800;font-size:15px;color:var(--ink);background:#fff;
     box-shadow:0 4px 0 #e6d6c8;padding:10px}
-  #avatar{width:150px;height:150px;margin:6px auto 0;display:block}
+  #avatar{width:150px;height:150px;margin:6px auto 0;display:block;cursor:pointer}
+  .say{display:inline-block;background:#fff;border:3px solid var(--pink);border-radius:16px;padding:4px 14px;
+    font-family:'Lalezar',cursive;font-size:18px;color:var(--pink-deep);position:relative}
+  .say::after{content:'';position:absolute;bottom:-10px;left:50%;margin-left:-8px;border:8px solid transparent;
+    border-top-color:var(--pink);border-bottom:0}
   .best{font-family:'Lalezar',cursive;font-size:20px;color:#5cae0c;margin-top:6px}
   .big{font-family:'Lalezar',cursive;font-size:56px;color:var(--pink-deep);line-height:1}
   .note{font-size:12px;opacity:.65;margin-top:8px}
@@ -55,6 +59,7 @@
 
 <div class="screen" id="startScreen">
   <div class="card">
+    <div id="avatarSay" class="say">دوس عليا! 👆</div>
     <canvas id="avatar" width="300" height="300"></canvas>
     <h1>ماسة <span>الشقية</span></h1>
     <p>ماسة بتحب الحلويات جدًا 😋<br/>حرّكها يمين وشمال عشان تلقط الحلو وتهرب من الخضار!</p>
@@ -221,7 +226,11 @@
 
     // mouth
     g.fillStyle = '#e8828f'; g.strokeStyle = '#c95f6f'; g.lineWidth = 2;
-    if (mood === 'happy') {
+    if (mood === 'talk') {
+      const o = 2 + Math.abs(Math.sin(t * 18)) * 6;
+      g.fillStyle = '#b8485c'; g.beginPath(); g.ellipse(0, 26, 8, o, 0, 0, Math.PI*2); g.fill();
+      g.strokeStyle = '#e8828f'; g.lineWidth = 3; g.stroke();
+    } else if (mood === 'happy') {
       g.beginPath(); g.arc(0, 24, 11, 0.1, Math.PI-0.1); g.closePath(); g.fill();
     } else if (mood === 'yuck') {
       g.beginPath(); g.moveTo(-10, 30); g.quadraticCurveTo(-4, 24, 0, 30); g.quadraticCurveTo(4, 36, 10, 29); g.stroke();
@@ -243,6 +252,7 @@
   }
 
   const av = $('avatar').getContext('2d');
+  $('avatar').addEventListener('pointerdown', () => { say(pick(LINES.poke), true); $('avatarSay').textContent = bubble.text; });
   function drawAvatar(){
     av.clearRect(0, 0, 300, 300);
     av.fillStyle = '#ffe1ef'; av.beginPath(); av.arc(150, 150, 146, 0, Math.PI*2); av.fill();
@@ -253,7 +263,8 @@
   // ---------- Sound ----------
   let actx = null, muted = store.get('masa-mute') === '1';
   $('muteBtn').textContent = muted ? '🔇' : '🔊';
-  $('muteBtn').onclick = () => { muted = !muted; store.set('masa-mute', muted ? '1':'0'); $('muteBtn').textContent = muted ? '🔇' : '🔊'; };
+  $('muteBtn').onclick = () => { muted = !muted; store.set('masa-mute', muted ? '1':'0'); $('muteBtn').textContent = muted ? '🔇' : '🔊';
+    if (muted) try { speechSynthesis.cancel(); } catch(e){} };
   function beep(freqs, dur = 0.09, type = 'sine', vol = 0.15){
     if (muted) return;
     try {
@@ -275,6 +286,50 @@
     lvl: () => beep([523, 659, 784], 0.07, 'sine')
   };
 
+  // ---------- Masa talks (speech bubble + voice) ----------
+  let bubble = null, arVoice = null, lastTalk = 0;
+  function pickVoice(){
+    try {
+      const vs = speechSynthesis.getVoices();
+      arVoice = vs.find(v => /^ar[-_]EG/i.test(v.lang)) || vs.find(v => /^ar/i.test(v.lang)) || null;
+    } catch(e){}
+  }
+  if ('speechSynthesis' in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+  // force: interrupt whatever she is saying; otherwise skip if she is mid-sentence
+  function say(text, force){
+    const now = performance.now();
+    if (!force && bubble && bubble.life > 0.6 && now - lastTalk < 900) return;
+    bubble = { text, life: 1.8 }; lastTalk = now;
+    if (muted || !('speechSynthesis' in window)) return;
+    try {
+      if (speechSynthesis.speaking) { if (!force) return; speechSynthesis.cancel(); }
+      const u = new SpeechSynthesisUtterance(text.replace(/[^\u0600-\u06FF\s!?؟.,،]/g, ''));
+      u.lang = arVoice ? arVoice.lang : 'ar-EG';
+      if (arVoice) u.voice = arVoice;
+      u.pitch = 1.9; u.rate = 1.05; u.volume = 1;   // high pitch = little girl voice
+      speechSynthesis.speak(u);
+    } catch(e){}
+  }
+  const pick = a => a[Math.random()*a.length|0];
+  const LINES = {
+    start: ['أنا ماسة! يلا نلعب!', 'هاتوا الحلويات بقى!', 'ماسة جاهزة!'],
+    yum: ['يمّي!', 'الله! حلو أوي!', 'كمان كمان!', 'هممم لذيذ!', 'دي بتاعتي!', 'هاااا!'],
+    gem: ['ماسة لقت ماسة!', 'واو! ماسة بتلمع!', 'دي أحلى ماسة!'],
+    heart: ['قلبي رجع!', 'بحبكم!'],
+    combo: ['أنا ملكة الحلويات!', 'محدش يقدر عليا!', 'شوفوني يا جماعة!'],
+    level: ['أنا شاطرة!', 'أسرع أسرع!', 'سهلة دي!'],
+    idle: ['هاتوا حلويات!', 'أنا جعانة!', 'فين الشوكولاتة؟', 'بابا هات مصاصة!'],
+    bad: {
+      '🥦': ['إيييع بروكلي!', 'مش باكل بروكلي!'],
+      '🧅': ['بصل؟! لأ لأ!', 'ريحته وحشة!'],
+      '🌶️': ['حرااااق!', 'آآآه بُقي!'],
+      '🥬': ['خس؟! لأ يا ماما!', 'مش أرنب أنا!']
+    },
+    over: ['خلاص... تاني تاني!', 'أنا لسه عايزة ألعب!'],
+    record: ['أنا بطلة! رقم قياسي!'],
+    poke: ['أنا ماسة الشقية!', 'متزغزغنيش!', 'هيهيهي!', 'بحب الحلويات!']
+  };
+
   // ---------- Game state ----------
   const GOOD = [
     {e:'🍭', p:10}, {e:'🍬', p:10}, {e:'🍫', p:15}, {e:'🍓', p:10},
@@ -285,7 +340,7 @@
   const EW = ['إيييع!', 'لأ لأ!', 'مش بحبه!', 'يععع!'];
 
   let state = 'menu', score = 0, lives = 3, level = 1, best = +(store.get('masa-best') || 0);
-  let items = [], pops = [], sparks = [], spawnT = 0, t = 0, moodT = 0, mood = 'pout', shake = 0, combo = 0;
+  let idleT = 6, items = [], pops = [], sparks = [], spawnT = 0, t = 0, moodT = 0, mood = 'pout', shake = 0, combo = 0;
   const masa = { x: 0, tx: 0, y: 0, s: 1 };
 
   function resize(){
@@ -321,12 +376,14 @@
     score = 0; lives = 3; level = 1; items = []; pops = []; sparks = []; spawnT = 0.4; combo = 0; mood = 'pout';
     masa.x = masa.tx = W / 2;
     $('startScreen').classList.add('hidden'); $('overScreen').classList.add('hidden');
-    state = 'play'; updateHud();
+    state = 'play'; updateHud(); idleT = 6;
+    say(pick(LINES.start), true);
   }
   function gameOver(){
     state = 'over'; sfx.over();
     const record = score > best;
     if (record) { best = score; store.set('masa-best', best); }
+    say(pick(record ? LINES.record : LINES.over), true);
     $('finalScore').textContent = score;
     $('overMsg').textContent = record ? 'رقم قياسي جديد! ماسة بطلة 🏆' :
       score > 150 ? 'ماسة شبعت حلويات 🍭' : 'ماسة عايزة تجرب تاني 😜';
@@ -363,6 +420,7 @@
 
   function update(dt){
     t += dt;
+    if (bubble) { bubble.life -= dt; if (bubble.life <= 0) bubble = null; }
     if (state !== 'play') return;
 
     if (keys.ArrowLeft || keys.a) masa.tx = Math.max(50*masa.s, masa.tx - 600*dt);
@@ -373,7 +431,7 @@
     if (spawnT <= 0) { spawn(); spawnT = Math.max(0.32, 0.95 - level * 0.07) * (0.7 + Math.random() * 0.6); }
 
     const newLevel = 1 + Math.floor(score / 120);
-    if (newLevel > level) { level = newLevel; sfx.lvl(); pop(W/2, H*0.35, 'مستوى ' + level + ' 🚀', '#5cae0c'); }
+    if (newLevel > level) { level = newLevel; sfx.lvl(); pop(W/2, H*0.35, 'مستوى ' + level + ' 🚀', '#5cae0c'); say(pick(LINES.level)); }
 
     const mx = masa.x, my = masa.y, rad = 48 * masa.s;
     for (let i = items.length - 1; i >= 0; i--) {
@@ -386,15 +444,19 @@
         if (it.kind === 'bad') {
           lives--; combo = 0; mood = 'yuck'; moodT = 0.8; shake = 0.35; sfx.yuck();
           pop(ix, it.y - 20, EW[Math.random()*EW.length|0], '#d94040');
+          say(pick(LINES.bad[it.e] || ['إيييع!']), true);
           if (navigator.vibrate) try { navigator.vibrate(80); } catch(e){}
           if (lives <= 0) { updateHud(); gameOver(); return; }
         } else if (it.kind === 'heart') {
           lives = Math.min(3, lives + 1); sfx.gem(); mood = 'happy'; moodT = 0.6;
-          pop(ix, it.y - 20, '+❤️', '#e2508f'); burst(ix, it.y, ['#ff6b8b', '#ffd1dc']);
+          pop(ix, it.y - 20, '+❤️', '#e2508f'); say(pick(LINES.heart), true); burst(ix, it.y, ['#ff6b8b', '#ffd1dc']);
         } else {
           combo++;
           const bonus = combo >= 5 ? 2 : 1, pts = it.p * bonus;
           score += pts; mood = 'happy'; moodT = 0.45;
+          if (it.kind === 'gem') say(pick(LINES.gem), true);
+          else if (combo === 5 || combo % 10 === 0) say(pick(LINES.combo), true);
+          else if (Math.random() < 0.45) say(pick(LINES.yum));
           if (it.kind === 'gem') { sfx.gem(); burst(ix, it.y, ['#7fe3ff', '#ffffff', '#f5c542']); pop(ix, it.y - 20, 'ماسة! +' + pts, '#1aa3d9'); }
           else { sfx.yum(); burst(ix, it.y, ['#ff7eb6', '#ffd166', '#8fdc2a']); pop(ix, it.y - 20, (bonus > 1 ? '×٢ ' : '') + YUM[Math.random()*YUM.length|0] + ' +' + pts, '#e2508f'); }
         }
@@ -406,6 +468,8 @@
         if (it.kind === 'good' || it.kind === 'gem') combo = 0;
       }
     }
+    idleT -= dt;
+    if (idleT <= 0) { idleT = 7 + Math.random() * 5; if (!bubble || bubble.life <= 0) say(pick(LINES.idle)); }
     if (moodT > 0) { moodT -= dt; if (moodT <= 0) mood = 'pout'; }
     if (shake > 0) shake -= dt;
   }
@@ -429,6 +493,26 @@
     }
   }
 
+  function drawBubble(g, x, y, b){
+    g.save();
+    g.globalAlpha = Math.min(1, b.life * 3);
+    g.font = "20px 'Lalezar', 'Tajawal', sans-serif"; g.direction = 'rtl';
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    const w = g.measureText(b.text).width + 28, h = 40;
+    const bx = Math.min(Math.max(x, w/2 + 8), W - w/2 - 8), by = Math.max(y - h/2 - 14, h/2 + 60);
+    const pop = 1 + Math.max(0, b.life - 1.65) * 2;
+    g.translate(bx, by); g.scale(pop, pop);
+    g.fillStyle = '#fff'; g.strokeStyle = '#e2508f'; g.lineWidth = 3;
+    g.beginPath();
+    if (g.roundRect) g.roundRect(-w/2, -h/2, w, h, 18); else g.rect(-w/2, -h/2, w, h);
+    g.fill(); g.stroke();
+    const tx = Math.max(-w/2 + 16, Math.min(w/2 - 16, x - bx));
+    g.beginPath(); g.moveTo(tx - 8, h/2 - 2); g.lineTo(tx, h/2 + 12); g.lineTo(tx + 8, h/2 - 2); g.fill();
+    g.beginPath(); g.moveTo(tx - 8, h/2); g.lineTo(tx, h/2 + 12); g.lineTo(tx + 8, h/2); g.stroke();
+    g.fillStyle = '#3a2340'; g.fillText(b.text, 0, 1);
+    g.restore();
+  }
+
   function render(){
     ctx.save();
     if (shake > 0) ctx.translate((Math.random()-0.5) * 12 * shake / 0.35, (Math.random()-0.5) * 8 * shake / 0.35);
@@ -447,8 +531,10 @@
     ctx.beginPath(); ctx.ellipse(masa.x, masa.y + 122 * masa.s, 46 * masa.s, 8 * masa.s, 0, 0, Math.PI*2); ctx.fill();
     const tilt = Math.max(-0.2, Math.min(0.2, (masa.tx - masa.x) / 300));
     ctx.save(); ctx.translate(masa.x, masa.y); ctx.rotate(tilt);
-    drawMasa(ctx, 0, 0, masa.s, state === 'play' ? mood : 'pout', t);
+    const talking = bubble && bubble.life > 0.5 && mood === 'pout';
+    drawMasa(ctx, 0, 0, masa.s, talking ? 'talk' : (state === 'play' ? mood : 'pout'), t);
     ctx.restore();
+    if (bubble && state !== 'menu') drawBubble(ctx, masa.x, masa.y - 70 * masa.s, bubble);
 
     for (let i = sparks.length - 1; i >= 0; i--) {
       const p = sparks[i]; p.life -= 1/60 * 1.6; p.vy += 400/60; p.x += p.vx/60; p.y += p.vy/60;
