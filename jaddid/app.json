@@ -1,0 +1,48 @@
+{
+  "expo": {
+    "name": "جدّد",
+    "slug": "jaddid",
+    "scheme": "jaddid",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jaddid.app",
+      "infoPlist": {
+        "CFBundleDevelopmentRegion": "ar"
+      }
+    },
+    "android": {
+      "package": "com.jaddid.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#0E5E4E",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-localization",
+        {
+          "supportsRTL": true,
+          "forcesRTL": true
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#0E5E4E"
+        }
+      ]
+    ]
+  }
+}
