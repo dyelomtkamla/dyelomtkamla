@@ -149,27 +149,22 @@ function seek(t) {
   /* ===== SCENE 2 — logo ===== */
   if (t > 3.3 && t < 7.7) {
     const m = q('#s2mark');
-    const sIn = k(t, 3.58, 4.42, .55, 1, 'b');
-    const fl = Math.sin((t - 3.6) * 1.5) * 7;
-    m.style.opacity = k(t, 3.58, 3.85, 0, 1, 'q3') * (1 - k(t, 7.18, 7.42, 0, 1, 'q3'));
-    m.style.transform = `translate3d(0,${fl.toFixed(1)}px,0) rotate(${k(t, 3.58, 4.5, -14, 0, 'b').toFixed(2)}deg) scale(${sIn.toFixed(4)})`;
-    const g = 16 + 22 * (.5 + .5 * Math.sin(t * 2.1));
-    q('#boltFill').style.filter = `drop-shadow(0 0 ${g.toFixed(1)}px rgba(247,183,51,.85))`;
-    q('#boltFill').style.opacity = k(t, 4.18, 4.46, 0, 1, 'q3');
-    draw(q('#hexLine'), t, 3.70, .95);
-    draw(q('#boltLine'), t, 3.98, .70);
-    q('#hexFill').style.opacity = k(t, 4.05, 4.6, 0, .55, 'q3');
+    const sIn = k(t, 3.56, 4.46, .62, 1, 'b');
+    m.style.opacity = k(t, 3.56, 3.88, 0, 1, 'q3') * (1 - k(t, 7.18, 7.42, 0, 1, 'q3'));
+    m.style.transform = `translate3d(0,${(Math.sin((t - 3.6) * 1.4) * 6).toFixed(1)}px,0) rotate(${k(t, 3.56, 4.6, -9, 0, 'b').toFixed(2)}deg) scale(${sIn.toFixed(4)})`;
+    const ha = q('#s2halo');
+    ha.style.opacity = k(t, 3.7, 4.6, 0, 1, 'q3') * (.62 + .38 * Math.sin(t * 2.0));
+    ha.style.transform = `scale(${(1 + .07 * Math.sin(t * 1.7)).toFixed(4)})`;
     const r = q('#s2ring');
-    r.style.opacity = k(t, 4.3, 5.0, 0, 1, 'q3') * (1 - k(t, 7.1, 7.4, 0, 1, 'q3'));
-    r.style.transform = `rotate(${(t * 26).toFixed(1)}deg) scale(${k(t, 4.3, 5.2, .82, 1, 'q3').toFixed(3)})`;
-    reveal('#s2word', t, 4.46, .80, { out: [7.12, .3] });
-    an('#s2tag', t, { i: [4.95, .6], y: 26, out: [7.14, .3], oy: -18 });
+    r.style.opacity = k(t, 4.1, 4.9, 0, 1, 'q3') * (1 - k(t, 7.1, 7.4, 0, 1, 'q3'));
+    r.style.transform = `rotate(${(t * 20).toFixed(1)}deg) scale(${k(t, 4.1, 5.2, .86, 1, 'q3').toFixed(3)})`;
+    reveal('#s2tag', t, 4.62, .80, { out: [7.12, .3] });
     const ru = q('#s2rule');
-    ru.style.width = k(t, 5.22, 6.0, 0, 560, 'xo') + 'px';
+    ru.style.width = k(t, 5.15, 5.95, 0, 600, 'xo') + 'px';
     ru.style.opacity = 1 - k(t, 7.1, 7.35, 0, 1, 'q3');
     const rg = q('#s2reg');
-    rg.style.opacity = k(t, 5.42, 6.1, 0, 1, 'q3') * (1 - k(t, 7.12, 7.38, 0, 1, 'q3'));
-    rg.style.letterSpacing = k(t, 5.42, 6.4, 26, 9, 'q5').toFixed(1) + 'px';
+    rg.style.opacity = k(t, 5.36, 6.05, 0, 1, 'q3') * (1 - k(t, 7.12, 7.38, 0, 1, 'q3'));
+    rg.style.letterSpacing = k(t, 5.36, 6.4, 26, 9, 'q5').toFixed(1) + 'px';
   }
 
   /* ===== SCENE 3 — services ===== */
@@ -218,8 +213,8 @@ function seek(t) {
       const ph = Math.max(0, (t - a - .3)) % 1.5 / 1.5;
       const dot = el.querySelector('.dot');
       dot.style.boxShadow = t > a + .3
-        ? `0 0 0 ${(7 + ph * 26).toFixed(1)}px rgba(247,183,51,${(.28 * (1 - ph)).toFixed(3)}),0 8px 22px rgba(0,0,0,.6)`
-        : `0 0 0 7px rgba(247,183,51,.22)`;
+        ? `0 0 0 ${(7 + ph * 26).toFixed(1)}px rgba(245,130,32,${(.28 * (1 - ph)).toFixed(3)}),0 8px 22px rgba(0,0,0,.6)`
+        : `0 0 0 7px rgba(245,130,32,.22)`;
     });
     an('#s4l1', t, { i: [15.62, .5], x: -30, out: [17.14, .26] });
     an('#s4l2', t, { i: [15.80, .5], x: -30, out: [17.16, .26] });
@@ -244,15 +239,16 @@ function seek(t) {
 
   /* ===== SCENE 6 — CTA ===== */
   if (t > 20.7) {
-    an('#s6mark', t, { i: [21.08, .75], y: 40, s: .82, e: 'b' });
+    an('#s6mark', t, { i: [21.04, .80], y: 44, s: .78, e: 'b' });
     reveal('#s6slog', t, 21.52, .8);
     const b = q('#s6btn');
     const bp = 1 + .035 * Math.sin((t - 22.0) * 4.6) * (t > 22.5 ? 1 : 0);
     b.style.opacity = k(t, 21.92, 22.3, 0, 1, 'q3');
     b.style.transform = `translate3d(0,${k(t, 21.92, 22.6, 36, 0, 'b').toFixed(1)}px,0) scale(${(k(t, 21.92, 22.6, .86, 1, 'b') * bp).toFixed(4)})`;
-    b.style.boxShadow = `0 26px ${(60 + 26 * (.5 + .5 * Math.sin((t - 22) * 4.6))).toFixed(0)}px rgba(247,183,51,${(.34 + .16 * (.5 + .5 * Math.sin((t - 22) * 4.6))).toFixed(3)}),inset 0 2px 0 rgba(255,255,255,.55)`;
+    b.style.boxShadow = `0 26px ${(60 + 26 * (.5 + .5 * Math.sin((t - 22) * 4.6))).toFixed(0)}px rgba(245,130,32,${(.34 + .16 * (.5 + .5 * Math.sin((t - 22) * 4.6))).toFixed(3)}),inset 0 2px 0 rgba(255,255,255,.55)`;
     an('#s6phone', t, { i: [22.34, .6], y: 26 });
     an('#s6foot', t, { i: [22.72, .6], y: 20 });
+    an('#s6foot2', t, { i: [22.95, .6], y: 18 });
     /* lightning strike behind the lock-up */
     const st = q('#strike');
     const f1 = pulse(t, 21.00, .05, .22) * (Math.sin(t * 120) > -.4 ? 1 : .35);

@@ -7,9 +7,9 @@
 <link rel="stylesheet" href="fonts.css">
 <style>
 :root{
-  --navy-900:#050B1C; --navy-800:#0A1631; --navy-700:#112350;
-  --blue:#2563EB; --blue-2:#3B82F6; --cyan:#38BDF8;
-  --gold:#F7B733; --gold-2:#FFD96B; --gold-3:#C98A14;
+  --navy-900:#04112B; --navy-800:#07204A; --navy-700:#0E3270;
+  --blue:#1C5BC4; --blue-2:#2D7DE0; --cyan:#4FB8F5;
+  --gold:#F58220; --gold-2:#FFA94D; --gold-3:#C4650F;
   --white:#F6F9FF; --mute:#A7B9DE;
 }
 *{margin:0;padding:0;box-sizing:border-box}
@@ -23,9 +23,9 @@ body{display:flex;align-items:center;justify-content:center;
 /* ---------- background layers ---------- */
 .layer{position:absolute;inset:0;pointer-events:none}
 #bg-grad{background:
-   radial-gradient(1100px 700px at 72% 18%, rgba(37,99,235,.42), transparent 62%),
-   radial-gradient(900px 620px at 20% 86%, rgba(247,183,51,.16), transparent 64%),
-   linear-gradient(160deg,#071027 0%,#0A1631 46%,#060D21 100%)}
+   radial-gradient(1100px 700px at 72% 18%, rgba(28,91,196,.42), transparent 62%),
+   radial-gradient(900px 620px at 20% 86%, rgba(245,130,32,.16), transparent 64%),
+   linear-gradient(160deg,#05162F 0%,#07204A 46%,#04122A 100%)}
 #bg-grid{opacity:.5;
   background-image:linear-gradient(rgba(140,180,255,.10) 1px,transparent 1px),
                    linear-gradient(90deg,rgba(140,180,255,.10) 1px,transparent 1px);
@@ -42,7 +42,7 @@ body{display:flex;align-items:center;justify-content:center;
 /* ---------- transition flash ---------- */
 #flash{position:absolute;inset:0;background:#EAF2FF;opacity:0;mix-blend-mode:screen}
 #bolt-wipe{position:absolute;top:-10%;height:120%;width:380px;opacity:0;
-  background:linear-gradient(90deg,transparent,rgba(255,217,107,.0) 18%,rgba(255,236,170,.95) 48%,rgba(255,217,107,0) 82%,transparent);
+  background:linear-gradient(90deg,transparent,rgba(255,180,100,.0) 18%,rgba(255,214,160,.95) 48%,rgba(255,180,100,0) 82%,transparent);
   transform:rotate(12deg);filter:blur(2px)}
 
 /* ---------- generic ---------- */
@@ -55,9 +55,9 @@ body{display:flex;align-items:center;justify-content:center;
   text-shadow:0 18px 60px rgba(0,0,0,.6)}
 .h2{font-weight:900;font-size:86px;line-height:1.14}
 .sub{font-weight:500;font-size:44px;color:var(--mute)}
-.gold{background:linear-gradient(94deg,#FFE596,var(--gold) 45%,#E09A16);
+.gold{background:linear-gradient(94deg,#FFC98A,var(--gold) 45%,#D4690D);
   -webkit-background-clip:text;background-clip:text;color:transparent}
-.glow-gold{filter:drop-shadow(0 10px 34px rgba(247,183,51,.45))}
+.glow-gold{filter:drop-shadow(0 10px 34px rgba(245,130,32,.45))}
 .icn{stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 
 /* ---------- scene 1 ---------- */
@@ -70,17 +70,19 @@ body{display:flex;align-items:center;justify-content:center;
   background:rgba(255,80,80,.10);border-radius:999px;padding:12px 28px;display:flex;align-items:center;gap:12px}
 #s1 .chip svg{width:26px;height:26px}
 .ghost{position:absolute;color:rgba(158,197,255,.30)}
-#s1 .qm{position:absolute;font-weight:900;color:rgba(247,183,51,.5);font-size:150px}
+#s1 .qm{position:absolute;font-weight:900;color:rgba(245,130,32,.5);font-size:150px}
 
 /* ---------- scene 2 : logo ---------- */
-#s2 .mark{position:relative;width:300px;height:300px}
-#s2 .mark svg{position:absolute;inset:0;width:100%;height:100%}
-#s2 .ring{position:absolute;inset:-34px;border-radius:50%;border:2px solid rgba(247,183,51,.28)}
-#s2 .word{font-weight:900;font-size:138px;letter-spacing:-3px;margin-top:26px}
-#s2 .tag{font-weight:700;font-size:48px;color:var(--white);opacity:.92;margin-top:10px}
-#s2 .rule{width:0;height:3px;margin:30px auto 0;
+#s2 .mark{position:relative;width:548px;height:548px;display:flex;align-items:center;justify-content:center}
+#s2 .mark img{width:100%;height:100%;object-fit:contain;border-radius:50%;
+  box-shadow:0 34px 90px rgba(0,0,0,.62),0 0 0 10px rgba(255,255,255,.06)}
+#s2 .halo{position:absolute;inset:-130px;border-radius:50%;
+  background:radial-gradient(circle,rgba(45,125,224,.42),rgba(245,130,32,.14) 46%,transparent 68%)}
+#s2 .ring{position:absolute;inset:-42px;border-radius:50%;border:2px dashed rgba(245,130,32,.45)}
+#s2 .tag{font-weight:900;font-size:72px;margin-top:44px;letter-spacing:-1px}
+#s2 .rule{width:0;height:4px;margin:26px auto 0;
   background:linear-gradient(90deg,transparent,var(--gold),transparent)}
-#s2 .region{font-weight:700;font-size:34px;letter-spacing:8px;color:var(--mute);margin-top:22px}
+#s2 .region{font-weight:700;font-size:36px;letter-spacing:8px;color:var(--mute);margin-top:20px}
 
 /* ---------- scene 3 : services ---------- */
 #s3 .head{position:absolute;top:116px;width:100%;text-align:center}
@@ -91,10 +93,10 @@ body{display:flex;align-items:center;justify-content:center;
   border:1px solid rgba(140,180,255,.20);
   box-shadow:0 34px 80px rgba(0,0,0,.52),inset 0 1px 0 rgba(255,255,255,.10)}
 .card .top{position:absolute;inset:0 0 auto 0;height:5px;
-  background:linear-gradient(90deg,var(--gold),#FFE59B)}
+  background:linear-gradient(90deg,var(--gold),#FFC98A)}
 .card .ico{width:112px;height:112px;margin:62px auto 0;color:var(--gold-2);
   display:flex;align-items:center;justify-content:center;
-  border-radius:28px;background:rgba(247,183,51,.10);border:1px solid rgba(247,183,51,.26)}
+  border-radius:28px;background:rgba(245,130,32,.10);border:1px solid rgba(245,130,32,.26)}
 .card .ico svg{width:64px;height:64px}
 .card h3{font-weight:900;font-size:44px;text-align:center;margin-top:40px}
 .card p{font-weight:500;font-size:29px;line-height:1.5;color:var(--mute);text-align:center;margin:16px 34px 0}
@@ -105,14 +107,14 @@ body{display:flex;align-items:center;justify-content:center;
 #s4 .head{position:absolute;top:220px;right:112px;width:800px;text-align:right}
 #s4 .h2{font-size:64px;line-height:1.32}
 #s4 .mapcard{position:absolute;top:138px;left:126px;width:760px;height:800px;border-radius:44px;overflow:hidden;
-  background:linear-gradient(158deg,#0C1C40,#060F26);border:1px solid rgba(140,180,255,.20);
+  background:linear-gradient(158deg,#07214A,#04112B);border:1px solid rgba(140,180,255,.20);
   box-shadow:0 40px 90px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08)}
 #s4 .mapcard svg{position:absolute;inset:0;width:100%;height:100%}
 #s4 .sealbl{position:absolute;left:586px;top:120px;font-weight:700;font-size:25px;letter-spacing:4px;
   color:rgba(160,200,255,.6);text-align:center;width:150px}
 #s4 .pin{position:absolute;transform-origin:50% 100%;text-align:center;margin-left:-70px;width:140px}
 #s4 .pin .dot{width:22px;height:22px;border-radius:50%;background:var(--gold);margin:0 auto;
-  border:3px solid rgba(255,245,210,.9)}
+  border:3px solid rgba(255,232,205,.9)}
 #s4 .pin .lbl{font-weight:800;font-size:30px;margin-top:12px;white-space:nowrap;
   text-shadow:0 4px 16px rgba(0,0,0,.9)}
 #s4 .list{margin-top:62px}
@@ -129,24 +131,27 @@ body{display:flex;align-items:center;justify-content:center;
 #s5 .divider{width:1px;height:150px;background:linear-gradient(180deg,transparent,rgba(140,180,255,.3),transparent);align-self:center}
 #s5 .chips{position:absolute;top:742px;left:0;right:0;display:flex;justify-content:center;gap:26px}
 #s5 .c{font-weight:700;font-size:32px;padding:18px 38px;border-radius:999px;
-  background:rgba(37,99,235,.16);border:1px solid rgba(140,180,255,.28);
+  background:rgba(28,91,196,.16);border:1px solid rgba(140,180,255,.28);
   display:flex;align-items:center;gap:14px}
 #s5 .c svg{width:28px;height:28px;color:var(--gold-2)}
 
 /* ---------- scene 6 : CTA ---------- */
-#s6 .center{gap:0}
-#s6 .markrow{display:flex;align-items:center;gap:26px}
-#s6 .markrow svg{width:136px;height:136px}
-#s6 .brand{font-weight:900;font-size:96px;letter-spacing:-2px}
-#s6 .slogan{font-weight:800;font-size:58px;margin-top:22px}
-#s6 .btn{margin-top:62px;display:flex;align-items:center;gap:26px;
-  padding:30px 76px;border-radius:999px;
-  background:linear-gradient(96deg,#FFDD80,var(--gold) 52%,#D9951A);
-  color:#17120A;font-weight:900;font-size:62px;
-  box-shadow:0 26px 70px rgba(247,183,51,.40),inset 0 2px 0 rgba(255,255,255,.55)}
-#s6 .btn svg{width:56px;height:56px;stroke-width:2.1}
-#s6 .phone{margin-top:34px;font-weight:900;font-size:76px;letter-spacing:4px;direction:ltr}
-#s6 .foot{margin-top:30px;font-weight:700;font-size:32px;color:var(--mute);letter-spacing:2px}
+#s6 .markrow{display:flex;align-items:center;justify-content:center}
+#s6 .markrow img{width:286px;height:286px;object-fit:contain;border-radius:50%;
+  box-shadow:0 26px 70px rgba(0,0,0,.6)}
+#s6 .slogan{font-weight:900;font-size:62px;margin-top:26px}
+#s6 .btn{margin-top:40px;display:flex;align-items:center;gap:24px;
+  padding:24px 64px;border-radius:999px;
+  background:linear-gradient(96deg,#FFC27A,var(--gold) 52%,#D4690D);
+  color:#1B1206;font-weight:900;font-size:54px;
+  box-shadow:0 26px 70px rgba(245,130,32,.40),inset 0 2px 0 rgba(255,255,255,.55)}
+#s6 .btn svg{width:50px;height:50px;stroke-width:2.1}
+#s6 .phone{margin-top:26px;font-weight:900;font-size:92px;letter-spacing:6px;direction:ltr;
+  background:linear-gradient(94deg,#FFC98A,var(--gold) 45%,#D4690D);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 10px 30px rgba(245,130,32,.35))}
+#s6 .foot{margin-top:22px;font-weight:700;font-size:30px;color:var(--white);opacity:.9}
+#s6 .foot2{margin-top:12px;font-weight:500;font-size:26px;color:var(--mute)}
 #strike{position:absolute;inset:0;opacity:0}
 </style>
 </head>
@@ -154,13 +159,13 @@ body{display:flex;align-items:center;justify-content:center;
 <div id="fit"><div id="stage">
   <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
     <linearGradient id="gBolt" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#FFE596"/><stop offset=".5" stop-color="#F7B733"/><stop offset="1" stop-color="#D9951A"/></linearGradient>
+      <stop offset="0" stop-color="#FFC98A"/><stop offset=".5" stop-color="#F58220"/><stop offset="1" stop-color="#D4690D"/></linearGradient>
     <linearGradient id="gHex" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#3B82F6"/><stop offset="1" stop-color="#1E3A8A"/></linearGradient>
+      <stop offset="0" stop-color="#2D7DE0"/><stop offset="1" stop-color="#0C3B86"/></linearGradient>
     <linearGradient id="gLand" x1=".1" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#1B3A7D"/><stop offset="1" stop-color="#0B1A3C"/></linearGradient>
+      <stop offset="0" stop-color="#13468F"/><stop offset="1" stop-color="#07234F"/></linearGradient>
     <linearGradient id="gSea" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0B2452" stop-opacity=".95"/><stop offset="1" stop-color="#061129" stop-opacity=".95"/></linearGradient>
+      <stop offset="0" stop-color="#0A2C66" stop-opacity=".95"/><stop offset="1" stop-color="#05152F" stop-opacity=".95"/></linearGradient>
     <pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse">
       <circle cx="3" cy="3" r="1.6" fill="rgba(120,170,255,.22)"/></pattern>
   </defs></svg>
@@ -170,7 +175,7 @@ body{display:flex;align-items:center;justify-content:center;
   <div class="layer" id="bg-grid-fade"></div>
   <svg class="layer" id="bg-arc" viewBox="0 0 1920 1080" fill="none">
     <path d="M-120 880 C 420 700 760 980 1240 760 S 1860 560 2060 640" stroke="rgba(56,189,248,.22)" stroke-width="2"/>
-    <path d="M-120 960 C 480 800 820 1040 1300 840 S 1900 660 2080 740" stroke="rgba(247,183,51,.16)" stroke-width="2"/>
+    <path d="M-120 960 C 480 800 820 1040 1300 840 S 1900 660 2080 740" stroke="rgba(245,130,32,.16)" stroke-width="2"/>
   </svg>
   <div class="layer" id="particles"></div>
   <div id="sweep"></div>
@@ -205,18 +210,13 @@ body{display:flex;align-items:center;justify-content:center;
   <!-- ============ SCENE 2 : LOGO ============ -->
   <div class="scene" id="s2"><div class="center">
     <div class="mark" id="s2mark">
+      <div class="halo" id="s2halo"></div>
       <div class="ring" id="s2ring"></div>
-      <svg viewBox="0 0 24 24">
-        <path id="hexFill" d="M12 1.6 21.1 6.8v10.4L12 22.4 2.9 17.2V6.8z" fill="url(#gHex)" opacity=".55"/>
-        <path id="hexLine" d="M12 1.6 21.1 6.8v10.4L12 22.4 2.9 17.2V6.8z" fill="none" stroke="#9EC5FF" stroke-width=".35" opacity=".75"/>
-        <path id="boltFill" class="glow-gold" d="M13.4 4.6 7.6 13h3.9l-.9 6.4 5.8-8.6h-3.9z" fill="url(#gBolt)"/>
-        <path id="boltLine" d="M13.4 4.6 7.6 13h3.9l-.9 6.4 5.8-8.6h-3.9z" fill="none" stroke="#FFE596" stroke-width=".45" stroke-linejoin="round"/>
-      </svg>
+      <img src="logo.png" alt="بروق الشرقية">
     </div>
-    <div class="word" id="s2word"><span class="gold">بروق</span> الشرقية</div>
-    <div class="tag" id="s2tag">لنقل وتخزين الأثاث</div>
+    <div class="tag" id="s2tag">لنقل وتخزين <span class="gold">الأثاث</span></div>
     <div class="rule" id="s2rule"></div>
-    <div class="region" id="s2reg">المنطقة الشرقية</div>
+    <div class="region" id="s2reg">المنطقة الشرقية — الدمام</div>
   </div></div>
 
   <!-- ============ SCENE 3 : SERVICES ============ -->
@@ -266,9 +266,9 @@ body{display:flex;align-items:center;justify-content:center;
           <path d="M520 650 c 26 -16 52 16 78 0" stroke="rgba(150,200,255,.30)" stroke-width="3" stroke-linecap="round"/>
         </g>
         <path id="land" d="M70 96 L430 60 C 470 120 440 172 480 214 C 520 256 492 302 452 334 C 420 360 440 406 478 448 C 516 490 486 542 430 580 C 390 608 400 662 440 714 L 168 748 C 112 648 70 436 70 96 Z"
-              fill="url(#gLand)" stroke="#6D9CF0" stroke-width="3"/>
+              fill="url(#gLand)" stroke="#5F9AF0" stroke-width="3"/>
         <path id="route" d="M425 152 C 372 246 406 342 430 404 C 452 466 472 498 452 522 C 398 584 312 604 252 652"
-              stroke="#F7B733" stroke-width="4.5" stroke-dasharray="15 17" stroke-linecap="round" opacity=".9"/>
+              stroke="#F58220" stroke-width="4.5" stroke-dasharray="15 17" stroke-linecap="round" opacity=".9"/>
       </svg>
       <div class="sealbl">الخليج العربي</div>
       <div class="pin" id="p1" style="left:425px;top:138px"><div class="dot"></div><div class="lbl">الجبيل</div></div>
@@ -304,22 +304,19 @@ body{display:flex;align-items:center;justify-content:center;
   <div class="scene" id="s6">
     <svg id="strike" viewBox="0 0 1920 1080" fill="none">
       <path id="strikePath" d="M980 -40 L 880 320 L 1010 300 L 860 760 L 1080 360 L 950 380 Z"
-            fill="rgba(255,243,205,.55)" stroke="rgba(255,255,245,.95)" stroke-width="5"
-            style="filter:drop-shadow(0 0 60px rgba(255,220,130,.95)) drop-shadow(0 0 140px rgba(120,170,255,.55))"/>
+            fill="rgba(255,228,190,.55)" stroke="rgba(255,248,235,.95)" stroke-width="5"
+            style="filter:drop-shadow(0 0 60px rgba(255,186,90,.95)) drop-shadow(0 0 140px rgba(120,170,255,.55))"/>
     </svg>
     <div class="center">
-      <div class="markrow" id="s6mark">
-        <svg viewBox="0 0 24 24"><path d="M12 1.6 21.1 6.8v10.4L12 22.4 2.9 17.2V6.8z" fill="url(#gHex)" opacity=".55" stroke="#9EC5FF" stroke-width=".35"/>
-          <path d="M13.4 4.6 7.6 13h3.9l-.9 6.4 5.8-8.6h-3.9z" fill="url(#gBolt)" stroke="#FFE596" stroke-width=".4"/></svg>
-        <div class="brand"><span class="gold">بروق</span> الشرقية</div>
-      </div>
+      <div class="markrow" id="s6mark"><img src="logo-sm.png" alt="بروق الشرقية"></div>
       <div class="slogan" id="s6slog">أثاثك يوصل <span class="gold">بسرعة البرق</span></div>
       <div class="btn" id="s6btn">
         <svg class="icn" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         اتصل الآن
       </div>
-      <div class="phone" id="s6phone">05X XXX XXXX</div>
-      <div class="foot" id="s6foot">نقل • تغليف • فك وتركيب • تخزين مكيّف</div>
+      <div class="phone" id="s6phone">0596106150</div>
+      <div class="foot" id="s6foot">نقل أثاث • فك وتركيب • تغليف • تخزين مكيّف</div>
+      <div class="foot2" id="s6foot2">وأيضاً: تنظيف منازل وفلل وشقق • غسيل كنب وسجاد ومجالس • مكافحة حشرات</div>
     </div>
   </div>
 
