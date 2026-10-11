@@ -1,0 +1,6 @@
+frames/
+node_modules/
+music_bed.wav
+probe/
+qa/
+package*.json

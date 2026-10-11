@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>بروق الشرقية</title>
+<link rel="stylesheet" href="fonts.css">
+<style>
+:root{
+  --navy-900:#050B1C; --navy-800:#0A1631; --navy-700:#112350;
+  --blue:#2563EB; --blue-2:#3B82F6; --cyan:#38BDF8;
+  --gold:#F7B733; --gold-2:#FFD96B; --gold-3:#C98A14;
+  --white:#F6F9FF; --mute:#A7B9DE;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#000;overflow:hidden}
+body{display:flex;align-items:center;justify-content:center;
+  font-family:'Cairo',sans-serif;-webkit-font-smoothing:antialiased}
+#fit{transform-origin:center center}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;
+  background:var(--navy-900);color:var(--white)}
+
+/* ---------- background layers ---------- */
+.layer{position:absolute;inset:0;pointer-events:none}
+#bg-grad{background:
+   radial-gradient(1100px 700px at 72% 18%, rgba(37,99,235,.42), transparent 62%),
+   radial-gradient(900px 620px at 20% 86%, rgba(247,183,51,.16), transparent 64%),
+   linear-gradient(160deg,#071027 0%,#0A1631 46%,#060D21 100%)}
+#bg-grid{opacity:.5;
+  background-image:linear-gradient(rgba(140,180,255,.10) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(140,180,255,.10) 1px,transparent 1px);
+  background-size:120px 120px}
+#bg-grid-fade{background:radial-gradient(760px 520px at 50% 50%,transparent 10%,rgba(5,11,28,.92) 72%)}
+#bg-arc{opacity:.5}
+#bg-noise{opacity:.05;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='.6'/></svg>");mix-blend-mode:overlay}
+#vignette{background:radial-gradient(1200px 820px at 50% 48%,transparent 42%,rgba(0,0,0,.72) 100%)}
+.particle{position:absolute;border-radius:50%;background:#9EC5FF;filter:blur(1px)}
+#sweep{position:absolute;top:-30%;width:420px;height:160%;
+  background:linear-gradient(90deg,transparent,rgba(190,220,255,.11),transparent);
+  transform:rotate(14deg)}
+
+/* ---------- transition flash ---------- */
+#flash{position:absolute;inset:0;background:#EAF2FF;opacity:0;mix-blend-mode:screen}
+#bolt-wipe{position:absolute;top:-10%;height:120%;width:380px;opacity:0;
+  background:linear-gradient(90deg,transparent,rgba(255,217,107,.0) 18%,rgba(255,236,170,.95) 48%,rgba(255,217,107,0) 82%,transparent);
+  transform:rotate(12deg);filter:blur(2px)}
+
+/* ---------- generic ---------- */
+.scene{position:absolute;inset:0;will-change:opacity,transform}
+.center{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%}
+.kicker{font-weight:700;font-size:30px;letter-spacing:12px;color:var(--gold-2);
+  display:flex;align-items:center;gap:22px}
+.kicker i{display:block;width:70px;height:2px;background:linear-gradient(90deg,transparent,var(--gold))}
+.h1{font-weight:900;font-size:132px;line-height:1.08;letter-spacing:-2px;
+  text-shadow:0 18px 60px rgba(0,0,0,.6)}
+.h2{font-weight:900;font-size:86px;line-height:1.14}
+.sub{font-weight:500;font-size:44px;color:var(--mute)}
+.gold{background:linear-gradient(94deg,#FFE596,var(--gold) 45%,#E09A16);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.glow-gold{filter:drop-shadow(0 10px 34px rgba(247,183,51,.45))}
+.icn{stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- scene 1 ---------- */
+#s1 .wrap{position:relative;height:100%}
+#s1 .txt{position:absolute;top:50%;right:160px;transform:translateY(-50%);text-align:right}
+#s1 .l1{font-weight:900;font-size:124px;line-height:1.1}
+#s1 .l2{font-weight:900;font-size:124px;line-height:1.1;margin-top:6px}
+#s1 .pain{display:flex;gap:18px;margin-top:46px;justify-content:flex-start}
+#s1 .chip{font-size:30px;font-weight:700;color:#FFC9C9;border:1px solid rgba(255,120,120,.35);
+  background:rgba(255,80,80,.10);border-radius:999px;padding:12px 28px;display:flex;align-items:center;gap:12px}
+#s1 .chip svg{width:26px;height:26px}
+.ghost{position:absolute;color:rgba(158,197,255,.30)}
+#s1 .qm{position:absolute;font-weight:900;color:rgba(247,183,51,.5);font-size:150px}
+
+/* ---------- scene 2 : logo ---------- */
+#s2 .mark{position:relative;width:300px;height:300px}
+#s2 .mark svg{position:absolute;inset:0;width:100%;height:100%}
+#s2 .ring{position:absolute;inset:-34px;border-radius:50%;border:2px solid rgba(247,183,51,.28)}
+#s2 .word{font-weight:900;font-size:138px;letter-spacing:-3px;margin-top:26px}
+#s2 .tag{font-weight:700;font-size:48px;color:var(--white);opacity:.92;margin-top:10px}
+#s2 .rule{width:0;height:3px;margin:30px auto 0;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+#s2 .region{font-weight:700;font-size:34px;letter-spacing:8px;color:var(--mute);margin-top:22px}
+
+/* ---------- scene 3 : services ---------- */
+#s3 .head{position:absolute;top:116px;width:100%;text-align:center}
+#s3 .h2{font-size:74px}
+#s3 .cards{position:absolute;top:356px;left:0;right:0;display:flex;gap:34px;justify-content:center}
+.card{position:relative;width:396px;height:466px;border-radius:34px;overflow:hidden;
+  background:linear-gradient(180deg,rgba(28,48,98,.92),rgba(10,22,49,.92));
+  border:1px solid rgba(140,180,255,.20);
+  box-shadow:0 34px 80px rgba(0,0,0,.52),inset 0 1px 0 rgba(255,255,255,.10)}
+.card .top{position:absolute;inset:0 0 auto 0;height:5px;
+  background:linear-gradient(90deg,var(--gold),#FFE59B)}
+.card .ico{width:112px;height:112px;margin:62px auto 0;color:var(--gold-2);
+  display:flex;align-items:center;justify-content:center;
+  border-radius:28px;background:rgba(247,183,51,.10);border:1px solid rgba(247,183,51,.26)}
+.card .ico svg{width:64px;height:64px}
+.card h3{font-weight:900;font-size:44px;text-align:center;margin-top:40px}
+.card p{font-weight:500;font-size:29px;line-height:1.5;color:var(--mute);text-align:center;margin:16px 34px 0}
+.card .shine{position:absolute;top:-20%;width:160px;height:140%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.16),transparent);transform:rotate(16deg)}
+
+/* ---------- scene 4 : map ---------- */
+#s4 .head{position:absolute;top:220px;right:112px;width:800px;text-align:right}
+#s4 .h2{font-size:64px;line-height:1.32}
+#s4 .mapcard{position:absolute;top:138px;left:126px;width:760px;height:800px;border-radius:44px;overflow:hidden;
+  background:linear-gradient(158deg,#0C1C40,#060F26);border:1px solid rgba(140,180,255,.20);
+  box-shadow:0 40px 90px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08)}
+#s4 .mapcard svg{position:absolute;inset:0;width:100%;height:100%}
+#s4 .sealbl{position:absolute;left:586px;top:120px;font-weight:700;font-size:25px;letter-spacing:4px;
+  color:rgba(160,200,255,.6);text-align:center;width:150px}
+#s4 .pin{position:absolute;transform-origin:50% 100%;text-align:center;margin-left:-70px;width:140px}
+#s4 .pin .dot{width:22px;height:22px;border-radius:50%;background:var(--gold);margin:0 auto;
+  border:3px solid rgba(255,245,210,.9)}
+#s4 .pin .lbl{font-weight:800;font-size:30px;margin-top:12px;white-space:nowrap;
+  text-shadow:0 4px 16px rgba(0,0,0,.9)}
+#s4 .list{margin-top:62px}
+#s4 .list div{font-weight:800;font-size:38px;margin-bottom:28px;display:flex;align-items:center;
+  gap:18px;justify-content:flex-start}
+#s4 .list svg{width:30px;height:30px;color:var(--gold);flex:0 0 auto}
+
+/* ---------- scene 5 : trust ---------- */
+#s5 .head{position:absolute;top:178px;width:100%;text-align:center}
+#s5 .stats{position:absolute;top:430px;left:0;right:0;display:flex;justify-content:center;gap:120px}
+#s5 .stat{text-align:center}
+#s5 .stat .n{font-weight:900;font-size:124px;line-height:1;letter-spacing:-2px;direction:ltr;unicode-bidi:isolate}
+#s5 .stat .t{font-weight:700;font-size:34px;color:var(--mute);margin-top:18px}
+#s5 .divider{width:1px;height:150px;background:linear-gradient(180deg,transparent,rgba(140,180,255,.3),transparent);align-self:center}
+#s5 .chips{position:absolute;top:742px;left:0;right:0;display:flex;justify-content:center;gap:26px}
+#s5 .c{font-weight:700;font-size:32px;padding:18px 38px;border-radius:999px;
+  background:rgba(37,99,235,.16);border:1px solid rgba(140,180,255,.28);
+  display:flex;align-items:center;gap:14px}
+#s5 .c svg{width:28px;height:28px;color:var(--gold-2)}
+
+/* ---------- scene 6 : CTA ---------- */
+#s6 .center{gap:0}
+#s6 .markrow{display:flex;align-items:center;gap:26px}
+#s6 .markrow svg{width:136px;height:136px}
+#s6 .brand{font-weight:900;font-size:96px;letter-spacing:-2px}
+#s6 .slogan{font-weight:800;font-size:58px;margin-top:22px}
+#s6 .btn{margin-top:62px;display:flex;align-items:center;gap:26px;
+  padding:30px 76px;border-radius:999px;
+  background:linear-gradient(96deg,#FFDD80,var(--gold) 52%,#D9951A);
+  color:#17120A;font-weight:900;font-size:62px;
+  box-shadow:0 26px 70px rgba(247,183,51,.40),inset 0 2px 0 rgba(255,255,255,.55)}
+#s6 .btn svg{width:56px;height:56px;stroke-width:2.1}
+#s6 .phone{margin-top:34px;font-weight:900;font-size:76px;letter-spacing:4px;direction:ltr}
+#s6 .foot{margin-top:30px;font-weight:700;font-size:32px;color:var(--mute);letter-spacing:2px}
+#strike{position:absolute;inset:0;opacity:0}
+</style>
+</head>
+<body>
+<div id="fit"><div id="stage">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+    <linearGradient id="gBolt" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFE596"/><stop offset=".5" stop-color="#F7B733"/><stop offset="1" stop-color="#D9951A"/></linearGradient>
+    <linearGradient id="gHex" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3B82F6"/><stop offset="1" stop-color="#1E3A8A"/></linearGradient>
+    <linearGradient id="gLand" x1=".1" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1B3A7D"/><stop offset="1" stop-color="#0B1A3C"/></linearGradient>
+    <linearGradient id="gSea" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B2452" stop-opacity=".95"/><stop offset="1" stop-color="#061129" stop-opacity=".95"/></linearGradient>
+    <pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="3" r="1.6" fill="rgba(120,170,255,.22)"/></pattern>
+  </defs></svg>
+
+  <div class="layer" id="bg-grad"></div>
+  <div class="layer" id="bg-grid"></div>
+  <div class="layer" id="bg-grid-fade"></div>
+  <svg class="layer" id="bg-arc" viewBox="0 0 1920 1080" fill="none">
+    <path d="M-120 880 C 420 700 760 980 1240 760 S 1860 560 2060 640" stroke="rgba(56,189,248,.22)" stroke-width="2"/>
+    <path d="M-120 960 C 480 800 820 1040 1300 840 S 1900 660 2080 740" stroke="rgba(247,183,51,.16)" stroke-width="2"/>
+  </svg>
+  <div class="layer" id="particles"></div>
+  <div id="sweep"></div>
+  <div class="layer" id="bg-noise"></div>
+  <div class="layer" id="vignette"></div>
+
+  <!-- ============ SCENE 1 : HOOK ============ -->
+  <div class="scene" id="s1"><div class="wrap">
+    <svg class="ghost" id="g1" style="right:1180px;top:210px;width:300px;height:300px" viewBox="0 0 24 24">
+      <g class="icn" style="stroke-width:1.1">
+        <path d="M3 15a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4H3z"/><path d="M6 13V8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v5"/>
+        <path d="M3 19v2M21 19v2"/></g></svg>
+    <svg class="ghost" id="g2" style="right:1520px;top:620px;width:220px;height:220px" viewBox="0 0 24 24">
+      <g class="icn" style="stroke-width:1.1">
+        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+        <path d="M3.3 7 12 12l8.7-5M12 22V12"/></g></svg>
+    <svg class="ghost" id="g3" style="right:1300px;top:420px;width:180px;height:180px" viewBox="0 0 24 24">
+      <g class="icn" style="stroke-width:1.1"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M12 3v18M9 10h.01M15 10h.01"/></g></svg>
+    <div class="qm" id="qm1" style="right:1120px;top:120px">؟</div>
+    <div class="qm" id="qm2" style="right:1560px;top:430px;font-size:96px">؟</div>
+    <div class="txt">
+      <div class="l1" id="s1a">ناوي تنقل بيتك؟</div>
+      <div class="l2 gold" id="s1b">وتخاف على أثاثك؟</div>
+      <div class="pain">
+        <div class="chip" id="s1c1"><svg class="icn" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>خدوش وكسر</div>
+        <div class="chip" id="s1c2"><svg class="icn" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>وقت وتعب</div>
+        <div class="chip" id="s1c3"><svg class="icn" viewBox="0 0 24 24"><path d="M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>فواتير مفتوحة</div>
+      </div>
+    </div>
+  </div></div>
+
+  <!-- ============ SCENE 2 : LOGO ============ -->
+  <div class="scene" id="s2"><div class="center">
+    <div class="mark" id="s2mark">
+      <div class="ring" id="s2ring"></div>
+      <svg viewBox="0 0 24 24">
+        <path id="hexFill" d="M12 1.6 21.1 6.8v10.4L12 22.4 2.9 17.2V6.8z" fill="url(#gHex)" opacity=".55"/>
+        <path id="hexLine" d="M12 1.6 21.1 6.8v10.4L12 22.4 2.9 17.2V6.8z" fill="none" stroke="#9EC5FF" stroke-width=".35" opacity=".75"/>
+        <path id="boltFill" class="glow-gold" d="M13.4 4.6 7.6 13h3.9l-.9 6.4 5.8-8.6h-3.9z" fill="url(#gBolt)"/>
+        <path id="boltLine" d="M13.4 4.6 7.6 13h3.9l-.9 6.4 5.8-8.6h-3.9z" fill="none" stroke="#FFE596" stroke-width=".45" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="word" id="s2word"><span class="gold">بروق</span> الشرقية</div>
+    <div class="tag" id="s2tag">لنقل وتخزين الأثاث</div>
+    <div class="rule" id="s2rule"></div>
+    <div class="region" id="s2reg">المنطقة الشرقية</div>
+  </div></div>
+
+  <!-- ============ SCENE 3 : SERVICES ============ -->
+  <div class="scene" id="s3">
+    <div class="head">
+      <div class="kicker" id="s3k" style="justify-content:center"><i></i>خدماتنا<i style="transform:scaleX(-1)"></i></div>
+      <div class="h2" id="s3t" style="margin-top:24px">كل شي من <span class="gold">الفك</span> إلى <span class="gold">التركيب</span></div>
+    </div>
+    <div class="cards" id="s3cards">
+      <div class="card"><div class="top"></div>
+        <div class="ico"><svg class="icn" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94L14.7 6.3z"/></svg></div>
+        <h3>فك وتركيب</h3><p>فنيون متخصصون<br>بعدد وأدوات أصلية</p>
+        <div class="shine"></div></div>
+      <div class="card"><div class="top"></div>
+        <div class="ico"><svg class="icn" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.3 7 12 12l8.7-5M12 22V12M16.5 9.4 7.5 4.2"/></svg></div>
+        <h3>تغليف احترافي</h3><p>فلين وكرتون مقوّى<br>حماية كاملة للقطع</p>
+        <div class="shine"></div></div>
+      <div class="card"><div class="top"></div>
+        <div class="ico"><svg class="icn" viewBox="0 0 24 24"><path d="M1.5 4.5h14v12h-14z"/><path d="M15.5 8.5h4l3 3v5h-7z"/><circle cx="6" cy="18.5" r="2.4"/><circle cx="18" cy="18.5" r="2.4"/></svg></div>
+        <h3>نقل آمن</h3><p>سيارات مجهّزة ومغلقة<br>ورافعات للأدوار العالية</p>
+        <div class="shine"></div></div>
+      <div class="card"><div class="top"></div>
+        <div class="ico"><svg class="icn" viewBox="0 0 24 24"><path d="M3 10 12 4l9 6"/><path d="M5 10v10h14V10"/><path d="M12 12v6M9.5 13.2l5 3.6M14.5 13.2l-5 3.6"/></svg></div>
+        <h3>تخزين مكيّف</h3><p>مستودعات نظيفة<br>ومراقبة ٢٤ ساعة</p>
+        <div class="shine"></div></div>
+    </div>
+  </div>
+
+  <!-- ============ SCENE 4 : COVERAGE ============ -->
+  <div class="scene" id="s4">
+    <div class="head">
+      <div class="kicker" id="s4k" style="justify-content:flex-start">نغطي<i style="transform:scaleX(-1)"></i></div>
+      <div class="h2" id="s4t" style="margin-top:20px">المنطقة <span class="gold">الشرقية</span><br>من الجبيل إلى الأحساء</div>
+      <div class="list">
+        <div id="s4l1"><svg class="icn" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>نقل داخل المدينة وبين المدن</div>
+        <div id="s4l2"><svg class="icn" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>معاينة مجانية وسعر واضح</div>
+        <div id="s4l3"><svg class="icn" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>فريق جاهز طول الأسبوع</div>
+      </div>
+    </div>
+    <div class="mapcard" id="s4map">
+      <svg viewBox="0 0 760 800" fill="none">
+        <path id="sea" d="M430 60 C 470 120 440 172 480 214 C 520 256 492 302 452 334 C 420 360 440 406 478 448 C 516 490 486 542 430 580 C 390 608 400 662 440 714 L 760 800 L 760 0 Z" fill="url(#gSea)"/>
+        <path d="M430 60 C 470 120 440 172 480 214 C 520 256 492 302 452 334 C 420 360 440 406 478 448 C 516 490 486 542 430 580 C 390 608 400 662 440 714 L 760 800 L 760 0 Z" fill="url(#dots)" opacity=".5"/>
+        <g id="waves" opacity=".55">
+          <path d="M540 150 c 26 -16 52 16 78 0" stroke="rgba(150,200,255,.45)" stroke-width="3" stroke-linecap="round"/>
+          <path d="M560 420 c 26 -16 52 16 78 0" stroke="rgba(150,200,255,.35)" stroke-width="3" stroke-linecap="round"/>
+          <path d="M520 650 c 26 -16 52 16 78 0" stroke="rgba(150,200,255,.30)" stroke-width="3" stroke-linecap="round"/>
+        </g>
+        <path id="land" d="M70 96 L430 60 C 470 120 440 172 480 214 C 520 256 492 302 452 334 C 420 360 440 406 478 448 C 516 490 486 542 430 580 C 390 608 400 662 440 714 L 168 748 C 112 648 70 436 70 96 Z"
+              fill="url(#gLand)" stroke="#6D9CF0" stroke-width="3"/>
+        <path id="route" d="M425 152 C 372 246 406 342 430 404 C 452 466 472 498 452 522 C 398 584 312 604 252 652"
+              stroke="#F7B733" stroke-width="4.5" stroke-dasharray="15 17" stroke-linecap="round" opacity=".9"/>
+      </svg>
+      <div class="sealbl">الخليج العربي</div>
+      <div class="pin" id="p1" style="left:425px;top:138px"><div class="dot"></div><div class="lbl">الجبيل</div></div>
+      <div class="pin" id="p2" style="left:362px;top:286px"><div class="dot"></div><div class="lbl">القطيف</div></div>
+      <div class="pin" id="p3" style="left:432px;top:398px"><div class="dot"></div><div class="lbl">الدمام</div></div>
+      <div class="pin" id="p4" style="left:286px;top:470px"><div class="dot"></div><div class="lbl">الظهران</div></div>
+      <div class="pin" id="p5" style="left:452px;top:524px"><div class="dot"></div><div class="lbl">الخبر</div></div>
+      <div class="pin" id="p6" style="left:248px;top:650px"><div class="dot"></div><div class="lbl">الأحساء</div></div>
+    </div>
+  </div>
+
+  <!-- ============ SCENE 5 : TRUST ============ -->
+  <div class="scene" id="s5">
+    <div class="head">
+      <div class="h2" id="s5t">ليش <span class="gold">بروق الشرقية</span>؟</div>
+      <div class="sub" id="s5s" style="margin-top:24px">لأن أثاثك يوصل… كما هو بالضبط</div>
+    </div>
+    <div class="stats">
+      <div class="stat" id="st1"><div class="n gold" id="n1">0</div><div class="t">عملية نقل ناجحة</div></div>
+      <div class="divider" id="dv1"></div>
+      <div class="stat" id="st2"><div class="n gold" id="n2">0</div><div class="t">ضمان سلامة الأثاث</div></div>
+      <div class="divider" id="dv2"></div>
+      <div class="stat" id="st3"><div class="n gold" id="n3">٢٤/٧</div><div class="t">خدمة واستقبال طلبات</div></div>
+    </div>
+    <div class="chips">
+      <div class="c" id="ch1"><svg class="icn" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m8.8 11.8 2.2 2.2 4.2-4.4"/></svg>تأمين على الممتلكات</div>
+      <div class="c" id="ch2"><svg class="icn" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/></svg>عمالة مدرَّبة ومنظَّمة</div>
+      <div class="c" id="ch3"><svg class="icn" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>أسعار بدون مفاجآت</div>
+    </div>
+  </div>
+
+  <!-- ============ SCENE 6 : CTA ============ -->
+  <div class="scene" id="s6">
+    <svg id="strike" viewBox="0 0 1920 1080" fill="none">
+      <path id="strikePath" d="M980 -40 L 880 320 L 1010 300 L 860 760 L 1080 360 L 950 380 Z"
+            fill="rgba(255,243,205,.55)" stroke="rgba(255,255,245,.95)" stroke-width="5"
+            style="filter:drop-shadow(0 0 60px rgba(255,220,130,.95)) drop-shadow(0 0 140px rgba(120,170,255,.55))"/>
+    </svg>
+    <div class="center">
+      <div class="markrow" id="s6mark">
+        <svg viewBox="0 0 24 24"><path d="M12 1.6 21.1 6.8v10.4L12 22.4 2.9 17.2V6.8z" fill="url(#gHex)" opacity=".55" stroke="#9EC5FF" stroke-width=".35"/>
+          <path d="M13.4 4.6 7.6 13h3.9l-.9 6.4 5.8-8.6h-3.9z" fill="url(#gBolt)" stroke="#FFE596" stroke-width=".4"/></svg>
+        <div class="brand"><span class="gold">بروق</span> الشرقية</div>
+      </div>
+      <div class="slogan" id="s6slog">أثاثك يوصل <span class="gold">بسرعة البرق</span></div>
+      <div class="btn" id="s6btn">
+        <svg class="icn" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        اتصل الآن
+      </div>
+      <div class="phone" id="s6phone">05X XXX XXXX</div>
+      <div class="foot" id="s6foot">نقل • تغليف • فك وتركيب • تخزين مكيّف</div>
+    </div>
+  </div>
+
+  <div id="bolt-wipe"></div>
+  <div id="flash"></div>
+</div></div>
+<script src="timeline.js"></script>
+</body>
+</html>

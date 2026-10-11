@@ -1,0 +1,51 @@
+@*
+    بروق الشرقية — قسم الفيديو الإعلاني لصفحة الهبوط (ASP.NET Core / Razor)
+    الاستخدام:  @await Html.PartialAsync("~/Views/Shared/VideoSection.cshtml")
+    ملاحظات SEO:
+      • JSON-LD من نوع VideoObject يجعل الفيديو مؤهلاً لمقتطفات الفيديو في نتائج جوجل.
+      • حدِّث uploadDate / contentUrl / thumbnailUrl بالقيم الحقيقية بعد الرفع.
+      • ضع الفيديو على نفس الدومين أو على CDN يدعم Range requests لتحسين سرعة التشغيل.
+*@
+@{
+    var baseUrl   = "https://www.broog-eastern.com";              // ← دومينك
+    var videoUrl  = $"{baseUrl}/media/broog-ad-25s.mp4";
+    var posterUrl = $"{baseUrl}/media/broog-ad-poster.jpg";
+    var uploaded  = DateTime.UtcNow.ToString("yyyy-MM-dd");
+}
+
+<section class="video-section" dir="rtl" aria-labelledby="video-h">
+    <h2 id="video-h">شركة بروق الشرقية لنقل وتخزين الأثاث بالمنطقة الشرقية</h2>
+    <p>فك وتركيب، تغليف احترافي، نقل آمن، وتخزين مكيّف في الدمام والخبر والظهران والقطيف والجبيل والأحساء.</p>
+
+    <video id="broogAd" width="1920" height="1080" controls preload="metadata"
+           poster="@posterUrl" playsinline
+           aria-label="إعلان بروق الشرقية لنقل وتخزين الأثاث">
+        <source src="@videoUrl" type="video/mp4" />
+        <track src="@($"{baseUrl}/media/broog-ad.vtt")" kind="captions" srclang="ar" label="العربية" default />
+        متصفحك لا يدعم تشغيل الفيديو.
+    </video>
+
+    <a class="cta" href="tel:+9665XXXXXXXX" rel="nofollow">اتصل الآن — بروق الشرقية</a>
+</section>
+
+<script type="application/ld+json">
+{
+  "@@context": "https://schema.org",
+  "@@type": "VideoObject",
+  "name": "بروق الشرقية لنقل وتخزين الأثاث بالمنطقة الشرقية",
+  "description": "إعلان موشن جرافيك لشركة بروق الشرقية: فك وتركيب الأثاث، تغليف احترافي، نقل آمن، وتخزين مكيّف في الدمام والخبر والظهران والقطيف والجبيل والأحساء.",
+  "thumbnailUrl": ["@posterUrl"],
+  "uploadDate": "@uploaded",
+  "duration": "PT25S",
+  "contentUrl": "@videoUrl",
+  "embedUrl": "@($"{baseUrl}/#video")",
+  "inLanguage": "ar-SA",
+  "publisher": {
+    "@@type": "MovingCompany",
+    "name": "بروق الشرقية لنقل وتخزين الأثاث",
+    "areaServed": ["الدمام","الخبر","الظهران","القطيف","الجبيل","الأحساء","المنطقة الشرقية"],
+    "telephone": "+9665XXXXXXXX",
+    "url": "@baseUrl"
+  }
+}
+</script>
