@@ -44,10 +44,8 @@ class BackgroundOption {
 const List<BackgroundOption> backgroundOptions = [
   BackgroundOption(id: 'original', name: 'الأصلية', kind: BackgroundKind.original),
   BackgroundOption(id: 'blur', name: 'بورتريه', kind: BackgroundKind.blur),
-  BackgroundOption(
-      id: 'white', name: 'أبيض', kind: BackgroundKind.color, colors: [Color(0xFFF7F7F5)]),
-  BackgroundOption(
-      id: 'black', name: 'أسود', kind: BackgroundKind.color, colors: [Color(0xFF111111)]),
+  BackgroundOption(id: 'white', name: 'أبيض', kind: BackgroundKind.color, colors: [Color(0xFFF7F7F5)]),
+  BackgroundOption(id: 'black', name: 'أسود', kind: BackgroundKind.color, colors: [Color(0xFF111111)]),
   BackgroundOption(
     id: 'studio',
     name: 'استوديو',

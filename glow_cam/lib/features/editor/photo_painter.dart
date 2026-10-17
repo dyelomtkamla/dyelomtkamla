@@ -14,6 +14,8 @@ class PhotoPainter extends CustomPainter {
     this.mask,
     this.customBackground,
     this.showOriginal = false,
+    this.lookInShader = false,
+    this.smoothing = 0,
   });
 
   final ui.Image photo;
@@ -21,6 +23,13 @@ class PhotoPainter extends CustomPainter {
   final ui.Image? customBackground;
   final EditSettings settings;
   final bool showOriginal;
+
+  /// When true, the GPU beauty shader applies the color grade, glow, wash and
+  /// vignette, so this painter only composites the photo and background.
+  final bool lookInShader;
+
+  /// Fallback skin smoothing for devices without shader filters.
+  final double smoothing;
 
   static ui.ImageFilter _blur(double sigma) =>
       ui.ImageFilter.blur(sigmaX: sigma, sigmaY: sigma, tileMode: TileMode.clamp);
@@ -36,34 +45,15 @@ class PhotoPainter extends CustomPainter {
       return;
     }
 
-    final w = size.width;
-    final s = settings;
-    final bg = s.background;
-    final useMask = bg.needsMask && mask != null;
-
-    // Everything inside this layer gets the color grade.
-    canvas.saveLayer(rect, Paint()..colorFilter = ColorFilter.matrix(s.colorMatrix));
-
-    if (useMask) {
-      _paintBackdrop(canvas, rect, src, bg, w);
-      // Person cut-out on its own layer, then keep only where the mask is.
-      canvas.saveLayer(rect, Paint());
-      _paintPerson(canvas, rect, src, w);
-      final maskSrc = Rect.fromLTWH(0, 0, mask!.width.toDouble(), mask!.height.toDouble());
-      canvas.drawImageRect(
-        mask!,
-        maskSrc,
-        rect,
-        Paint()
-          ..blendMode = BlendMode.dstIn
-          ..filterQuality = FilterQuality.medium
-          ..imageFilter = _blur(w * 0.0025),
-      );
-      canvas.restore();
-    } else {
-      _paintPerson(canvas, rect, src, w);
+    if (lookInShader) {
+      _paintComposite(canvas, rect, src, size.width);
+      return;
     }
 
+    final s = settings;
+    // Everything inside this layer gets the color grade.
+    canvas.saveLayer(rect, Paint()..colorFilter = ColorFilter.matrix(s.colorMatrix));
+    _paintComposite(canvas, rect, src, size.width);
     if (s.totalGlow > 0) {
       canvas.saveLayer(rect, Paint()..blendMode = BlendMode.screen);
       canvas.drawImageRect(
@@ -71,7 +61,7 @@ class PhotoPainter extends CustomPainter {
         src,
         rect,
         Paint()
-          ..imageFilter = _blur(w * 0.025)
+          ..imageFilter = _blur(size.width * 0.025)
           ..color = Color.fromRGBO(0, 0, 0, s.totalGlow * 0.45),
       );
       canvas.restore();
@@ -84,11 +74,9 @@ class PhotoPainter extends CustomPainter {
       canvas.drawRect(
         rect,
         Paint()
-          ..shader = ui.Gradient.linear(
-            rect.topLeft,
-            rect.bottomRight,
-            [for (final c in wash) c.withValues(alpha: s.washOpacity)],
-          ),
+          ..shader = ui.Gradient.linear(rect.topLeft, rect.bottomRight, [
+            for (final c in wash) c.withValues(alpha: s.washOpacity),
+          ]),
       );
       canvas.restore();
     }
@@ -107,11 +95,35 @@ class PhotoPainter extends CustomPainter {
     }
   }
 
+  /// Photo, optionally cut out and placed on the chosen background.
+  void _paintComposite(Canvas canvas, Rect rect, Rect src, double w) {
+    final bg = settings.background;
+    final m = mask;
+    if (!bg.needsMask || m == null) {
+      _paintPerson(canvas, rect, src, w);
+      return;
+    }
+    _paintBackdrop(canvas, rect, src, bg, w);
+    // Person cut-out on its own layer, then keep only where the mask is.
+    canvas.saveLayer(rect, Paint());
+    _paintPerson(canvas, rect, src, w);
+    canvas.drawImageRect(
+      m,
+      Rect.fromLTWH(0, 0, m.width.toDouble(), m.height.toDouble()),
+      rect,
+      Paint()
+        ..blendMode = BlendMode.dstIn
+        ..filterQuality = FilterQuality.medium
+        ..imageFilter = _blur(w * 0.0025),
+    );
+    canvas.restore();
+  }
+
   void _paintPerson(Canvas canvas, Rect rect, Rect src, double w) {
     canvas.drawImageRect(photo, src, rect, Paint()..filterQuality = FilterQuality.high);
-    if (settings.smoothing > 0) {
-      // "Soft skin": a blurred copy blended with `lighten` evens out small dark
-      // details (pores, blemishes) while keeping highlights and edges.
+    if (!lookInShader && smoothing > 0) {
+      // "Soft skin" fallback: a blurred copy blended with `lighten` evens out
+      // small dark details while keeping highlights and edges.
       canvas.drawImageRect(
         photo,
         src,
@@ -119,7 +131,7 @@ class PhotoPainter extends CustomPainter {
         Paint()
           ..blendMode = BlendMode.lighten
           ..imageFilter = _blur(w * 0.006)
-          ..color = Color.fromRGBO(0, 0, 0, settings.smoothing * 0.8),
+          ..color = Color.fromRGBO(0, 0, 0, smoothing * 0.8),
       );
     }
   }
@@ -162,5 +174,7 @@ class PhotoPainter extends CustomPainter {
       old.mask != mask ||
       old.customBackground != customBackground ||
       old.settings != settings ||
-      old.showOriginal != showOriginal;
+      old.showOriginal != showOriginal ||
+      old.lookInShader != lookInShader ||
+      old.smoothing != smoothing;
 }

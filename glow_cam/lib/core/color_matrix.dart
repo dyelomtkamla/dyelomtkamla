@@ -29,8 +29,7 @@ class ColorMatrix {
   }
 
   /// Chains several matrices, applied in list order.
-  static List<double> chain(List<List<double>> matrices) =>
-      matrices.fold(identity, then);
+  static List<double> chain(List<List<double>> matrices) => matrices.fold(identity, then);
 
   /// Linear blend between identity (t = 0) and [m] (t = 1).
   static List<double> lerpFromIdentity(List<double> m, double t) =>
@@ -84,13 +83,12 @@ class ColorMatrix {
     double addR = 0,
     double addG = 0,
     double addB = 0,
-  }) =>
-      [
-        r, 0, 0, 0, addR, //
-        0, g, 0, 0, addG, //
-        0, 0, b, 0, addB, //
-        0, 0, 0, 1, 0, //
-      ];
+  }) => [
+    r, 0, 0, 0, addR, //
+    0, g, 0, 0, addG, //
+    0, 0, b, 0, addB, //
+    0, 0, 0, 1, 0, //
+  ];
 
   /// Lifts blacks and lowers whites for a matte, faded look. [a] in 0..1.
   static List<double> fade(double a) {

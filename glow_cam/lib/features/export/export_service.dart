@@ -11,11 +11,18 @@ import '../editor/photo_painter.dart';
 class ExportService {
   static const album = 'GlowCam';
 
-  /// Renders [painter] at the photo's native resolution and encodes PNG.
-  static Future<Uint8List> render(PhotoPainter painter) async {
+  /// Renders [painter] at the photo's native resolution, through the GPU
+  /// beauty [filter] when given, and encodes PNG.
+  static Future<Uint8List> render(PhotoPainter painter, {ui.ImageFilter? filter}) async {
     final w = painter.photo.width, h = painter.photo.height;
+    final size = ui.Size(w.toDouble(), h.toDouble());
     final recorder = ui.PictureRecorder();
-    painter.paint(ui.Canvas(recorder), ui.Size(w.toDouble(), h.toDouble()));
+    final canvas = ui.Canvas(recorder);
+    if (filter != null) {
+      canvas.saveLayer(ui.Offset.zero & size, ui.Paint()..imageFilter = filter);
+    }
+    painter.paint(canvas, size);
+    if (filter != null) canvas.restore();
     final picture = recorder.endRecording();
     final image = await picture.toImage(w, h);
     picture.dispose();

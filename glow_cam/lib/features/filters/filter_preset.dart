@@ -58,18 +58,12 @@ final List<FilterPreset> filterPresets = [
   FilterPreset(
     id: 'vivid',
     name: 'حيوي',
-    matrix: ColorMatrix.chain([
-      ColorMatrix.saturation(1.35),
-      ColorMatrix.contrast(1.12),
-    ]),
+    matrix: ColorMatrix.chain([ColorMatrix.saturation(1.35), ColorMatrix.contrast(1.12)]),
   ),
   FilterPreset(
     id: 'bw',
     name: 'أبيض وأسود',
-    matrix: ColorMatrix.chain([
-      ColorMatrix.saturation(0),
-      ColorMatrix.contrast(1.18),
-    ]),
+    matrix: ColorMatrix.chain([ColorMatrix.saturation(0), ColorMatrix.contrast(1.18)]),
     vignette: 0.35,
   ),
   // ---------- Pro looks ----------

@@ -45,6 +45,7 @@ dependencies:
   shared_preferences: ^2.5.6
   flutter_localizations:
     sdk: flutter
+  google_mlkit_face_detection: ^0.15.1
 
 dev_dependencies:
   flutter_test:
@@ -67,6 +68,9 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  shaders:
+    - shaders/beauty.frag
 
   # To add assets to your application, add an assets section, like this:
   # assets:

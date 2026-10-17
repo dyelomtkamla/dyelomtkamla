@@ -28,12 +28,15 @@ void main() {
 
       for (final preset in filterPresets) {
         for (final bg in backgroundOptions) {
-          final png = await ExportService.render(PhotoPainter(
-            photo: photo,
-            mask: mask,
-            customBackground: custom,
-            settings: EditSettings(preset: preset, background: bg, smoothing: 0.5, glow: 0.3),
-          ));
+          final png = await ExportService.render(
+            PhotoPainter(
+              photo: photo,
+              mask: mask,
+              customBackground: custom,
+              settings: EditSettings(preset: preset, background: bg, glow: 0.3),
+              smoothing: 0.5,
+            ),
+          );
           // PNG signature.
           expect(png.sublist(0, 4), [0x89, 0x50, 0x4E, 0x47], reason: '${preset.id}/${bg.id}');
         }

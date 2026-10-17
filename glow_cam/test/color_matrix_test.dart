@@ -3,9 +3,9 @@ import 'package:glow_cam/core/color_matrix.dart';
 
 /// Applies a 4x5 matrix to an RGBA pixel (0..255).
 List<double> apply(List<double> m, List<double> px) => [
-      for (var r = 0; r < 4; r++)
-        m[r * 5] * px[0] + m[r * 5 + 1] * px[1] + m[r * 5 + 2] * px[2] + m[r * 5 + 3] * px[3] + m[r * 5 + 4],
-    ];
+  for (var r = 0; r < 4; r++)
+    m[r * 5] * px[0] + m[r * 5 + 1] * px[1] + m[r * 5 + 2] * px[2] + m[r * 5 + 3] * px[3] + m[r * 5 + 4],
+];
 
 void expectPixel(List<double> actual, List<double> expected) {
   for (var i = 0; i < 4; i++) {

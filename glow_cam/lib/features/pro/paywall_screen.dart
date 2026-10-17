@@ -9,9 +9,8 @@ class PaywallScreen extends StatelessWidget {
 
   /// Opens the paywall; resolves to true if the user is Pro afterwards.
   static Future<bool> show(BuildContext context) async {
-    await Navigator.of(context).push(
-      MaterialPageRoute<void>(fullscreenDialog: true, builder: (_) => const PaywallScreen()),
-    );
+    await Navigator.of(context)
+        .push(MaterialPageRoute<void>(fullscreenDialog: true, builder: (_) => const PaywallScreen()));
     return context.mounted && ProScope.of(context).isPro;
   }
 
@@ -47,10 +46,8 @@ class PaywallScreen extends StatelessWidget {
                 Text(
                   'GlowCam Pro',
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                      ),
+                  style: Theme.of(context).textTheme.headlineMedium
+                      ?.copyWith(color: Colors.white, fontWeight: FontWeight.w800),
                 ),
                 const SizedBox(height: 8),
                 const Text(
@@ -59,7 +56,10 @@ class PaywallScreen extends StatelessWidget {
                   style: TextStyle(color: Colors.white70, fontSize: 16),
                 ),
                 const SizedBox(height: 28),
-                const _Perk(icon: Icons.auto_awesome, text: 'فلاتر احترافية: كريمي، وردي، سينمائي، نيون، إشراقة…'),
+                const _Perk(
+                  icon: Icons.auto_awesome,
+                  text: 'فلاتر احترافية: كريمي، وردي، سينمائي، نيون، إشراقة…',
+                ),
                 const _Perk(icon: Icons.wallpaper, text: 'خلفيات استوديو ومتدرجة وخلفية من صورك'),
                 const _Perk(icon: Icons.face_retouching_natural, text: 'تجميل البشرة والإضاءة بجودة عالية'),
                 const _Perk(icon: Icons.hd, text: 'حفظ بأعلى دقة بدون علامة مائية'),
@@ -77,8 +77,11 @@ class PaywallScreen extends StatelessWidget {
                 if (pro.error != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 8),
-                    child: Text(pro.error!,
-                        textAlign: TextAlign.center, style: const TextStyle(color: Colors.yellowAccent)),
+                    child: Text(
+                      pro.error!,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.yellowAccent),
+                    ),
                   ),
                 TextButton(
                   onPressed: pro.storeAvailable ? pro.restore : null,
@@ -87,8 +90,10 @@ class PaywallScreen extends StatelessWidget {
                 if (ProService.demoUnlockEnabled)
                   TextButton(
                     onPressed: pro.debugUnlock,
-                    child: const Text('تفعيل تجريبي (نسخة الاختبار)',
-                        style: TextStyle(color: Colors.white54)),
+                    child: const Text(
+                      'تفعيل تجريبي (نسخة الاختبار)',
+                      style: TextStyle(color: Colors.white54),
+                    ),
                   ),
                 const SizedBox(height: 8),
               ],
@@ -107,15 +112,17 @@ class _Perk extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6),
-        child: Row(
-          children: [
-            Icon(icon, color: Colors.white),
-            const SizedBox(width: 12),
-            Expanded(child: Text(text, style: const TextStyle(color: Colors.white, fontSize: 15))),
-          ],
+    padding: const EdgeInsets.symmetric(vertical: 6),
+    child: Row(
+      children: [
+        Icon(icon, color: Colors.white),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(text, style: const TextStyle(color: Colors.white, fontSize: 15)),
         ),
-      );
+      ],
+    ),
+  );
 }
 
 class _PlanButton extends StatelessWidget {

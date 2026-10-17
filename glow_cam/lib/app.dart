@@ -12,15 +12,15 @@ class GlowCamApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ProScope(
-        service: pro,
-        child: MaterialApp(
-          title: 'GlowCam',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.dark(),
-          locale: const Locale('ar'),
-          supportedLocales: const [Locale('ar'), Locale('en')],
-          localizationsDelegates: GlobalMaterialLocalizations.delegates,
-          home: const CameraScreen(),
-        ),
-      );
+    service: pro,
+    child: MaterialApp(
+      title: 'GlowCam',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.dark(),
+      locale: const Locale('ar'),
+      supportedLocales: const [Locale('ar'), Locale('en')],
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      home: const CameraScreen(),
+    ),
+  );
 }

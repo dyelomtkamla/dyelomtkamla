@@ -11,10 +11,10 @@ class AppTheme {
   );
 
   static ThemeData dark() => ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.dark,
-        colorScheme: ColorScheme.fromSeed(seedColor: brand, brightness: Brightness.dark),
-        scaffoldBackgroundColor: Colors.black,
-        sliderTheme: const SliderThemeData(showValueIndicator: ShowValueIndicator.onDrag),
-      );
+    useMaterial3: true,
+    brightness: Brightness.dark,
+    colorScheme: ColorScheme.fromSeed(seedColor: brand, brightness: Brightness.dark),
+    scaffoldBackgroundColor: Colors.black,
+    sliderTheme: const SliderThemeData(showValueIndicator: ShowValueIndicator.onDrag),
+  );
 }

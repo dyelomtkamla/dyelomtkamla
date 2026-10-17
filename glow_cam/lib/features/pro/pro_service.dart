@@ -39,11 +39,14 @@ class ProService extends ChangeNotifier {
     try {
       storeAvailable = await _iap.isAvailable();
       if (storeAvailable) {
-        _sub = _iap.purchaseStream.listen(_onPurchases, onError: (Object e) {
-          error = 'تعذر إتمام عملية الشراء';
-          purchasing = false;
-          notifyListeners();
-        });
+        _sub = _iap.purchaseStream.listen(
+          _onPurchases,
+          onError: (Object e) {
+            error = 'تعذر إتمام عملية الشراء';
+            purchasing = false;
+            notifyListeners();
+          },
+        );
         final res = await _iap.queryProductDetails({monthlyId, yearlyId});
         products = res.productDetails..sort((a, b) => a.rawPrice.compareTo(b.rawPrice));
       }
@@ -113,8 +116,7 @@ class ProService extends ChangeNotifier {
 
 /// Makes the [ProService] available to the widget tree.
 class ProScope extends InheritedNotifier<ProService> {
-  const ProScope({super.key, required ProService service, required super.child})
-      : super(notifier: service);
+  const ProScope({super.key, required ProService service, required super.child}) : super(notifier: service);
 
   static ProService of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<ProScope>()!.notifier!;
