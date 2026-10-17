@@ -1,0 +1,64 @@
+name: GlowCam build
+
+on:
+  push:
+    paths:
+      - 'glow_cam/**'
+      - '.github/workflows/glowcam-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: glow_cam
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+
+      # Release build signed with the debug key so it installs directly.
+      # DEMO=true shows the free "trial unlock" button for Pro features.
+      - run: flutter build apk --release --dart-define=DEMO=true
+
+      - name: Package
+        run: |
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/app-release.apk dist/GlowCam.apk
+          cd dist && zip -9 GlowCam-android.zip GlowCam.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GlowCam-android
+          path: glow_cam/dist/GlowCam.apk
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: glowcam-build-${{ github.run_number }}
+          name: GlowCam (Android) — build ${{ github.run_number }}
+          prerelease: true
+          target_commitish: ${{ github.sha }}
+          body: |
+            نسخة تجريبية من GlowCam لأندرويد.
+            حمّل GlowCam.apk على الموبايل وافتحه للتثبيت (اسمح بالتثبيت من مصادر غير معروفة).
+            في شاشة Pro يوجد زر "تفعيل تجريبي" لتجربة كل المميزات.
+          files: |
+            glow_cam/dist/GlowCam.apk
+            glow_cam/dist/GlowCam-android.zip

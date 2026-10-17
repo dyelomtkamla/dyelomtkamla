@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
@@ -85,10 +84,10 @@ class PaywallScreen extends StatelessWidget {
                   onPressed: pro.storeAvailable ? pro.restore : null,
                   child: const Text('استعادة المشتريات', style: TextStyle(color: Colors.white)),
                 ),
-                if (kDebugMode)
+                if (ProService.demoUnlockEnabled)
                   TextButton(
                     onPressed: pro.debugUnlock,
-                    child: const Text('تفعيل تجريبي (وضع التطوير فقط)',
+                    child: const Text('تفعيل تجريبي (نسخة الاختبار)',
                         style: TextStyle(color: Colors.white54)),
                   ),
                 const SizedBox(height: 8),

@@ -16,6 +16,9 @@ class ProService extends ChangeNotifier {
   static const yearlyId = 'glowcam_pro_yearly';
   static const _prefsKey = 'is_pro';
 
+  /// Test builds (`--dart-define=DEMO=true`) offer a free unlock button.
+  static const demoUnlockEnabled = kDebugMode || bool.fromEnvironment('DEMO');
+
   final InAppPurchase _iap = InAppPurchase.instance;
   StreamSubscription<List<PurchaseDetails>>? _sub;
 
@@ -69,9 +72,9 @@ class ProService extends ChangeNotifier {
     await _iap.restorePurchases();
   }
 
-  /// Debug-only shortcut so features can be tested without a store account.
+  /// Test-only shortcut so features can be tried without a store account.
   Future<void> debugUnlock() async {
-    if (kDebugMode) await _setPro(true);
+    if (demoUnlockEnabled) await _setPro(true);
   }
 
   Future<void> _onPurchases(List<PurchaseDetails> purchases) async {
